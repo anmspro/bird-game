@@ -72,11 +72,12 @@ game.BirdEntity = me.Entity.extend({
 
         var hitSky = -80; // bird height + 20px
         if (this.pos.y <= hitSky || this.collided) {
-            game.data.start = false;
-            me.audio.play("lose");
-            // if(game.data.life == 0){ this.endAnimation(); }
-            this.endAnimation();
-            return false;
+            if(game.data.life == 0){
+                game.data.start = false;
+                me.audio.play("lose");
+                this.endAnimation();
+                return false;
+            }
         }
         me.collision.check(this);
         return true;
@@ -84,6 +85,7 @@ game.BirdEntity = me.Entity.extend({
 
     onCollision: function(response) {
         var obj = response.b;
+        game.data.life--;
         if (obj.type === 'pipe' || obj.type === 'ground') {
             me.device.vibrate(500);
             this.collided = true;

@@ -95,7 +95,7 @@ game.GameOverScreen = me.ScreenObject.extend({
                     me.game.viewport.height/2 + 50
                 );
                 
-                //top score
+                //Remaining lives
                 this.font.draw(
                     renderer,
                     this.lifes,

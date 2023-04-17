@@ -25,16 +25,20 @@ game.HUD.ScoreItem = me.Renderable.extend({
     init: function(x, y) {
         this._super(me.Renderable, "init", [x, y, 10, 10]);
 
-        // local copy of the global score
-        this.stepsFont = new me.Font('gamefont', 80, '#000', 'center');
+        this.font = new me.Font('gamefont', 40, 'red', 'left');
+        this.steps = 'Steps: ' + game.data.steps.toString();
+        this.lifes= 'Life: ' + game.data.life.toString();
 
         // make sure we use screen coordinates
         this.floating = true;
     },
 
     draw: function (renderer) {
-        if (game.data.start && me.state.isCurrent(me.state.PLAY))
-            this.stepsFont.draw(renderer, game.data.steps, me.game.viewport.width/2, 10);
+
+        if (game.data.start && me.state.isCurrent(me.state.PLAY)) {
+            this.font.draw(renderer, this.steps, me.game.viewport.width/2 + 50, 10);
+            this.font.draw(renderer, this.lifes, me.game.viewport.width/2 - 150, 10);
+        }
     }
 
 });
