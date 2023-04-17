@@ -10,7 +10,8 @@ var game = {
 
     resources: [
         // images
-        {name: "bg", type:"image", src: "data/img/bg1.png"},
+        {name: "bg", type:"image", src: "data/img/bg.png"},
+        // {name: "bg", type:"image", src: "data/img/bg1.png"},
         {name: "clumsy", type:"image", src: "data/img/clumsy.png"},
         {name: "pipe", type:"image", src: "data/img/pipe.png"},
         {name: "logo", type:"image", src: "data/img/logo.png"},
@@ -32,6 +33,7 @@ var game = {
 
     "onload": function() {
         if (!me.video.init(900, 600, {
+        // if (!me.video.init(600, 900, {
             wrapper: "screen",
             scale : "auto",
             scaleMethod: "fit"

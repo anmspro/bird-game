@@ -74,6 +74,7 @@ game.BirdEntity = me.Entity.extend({
         if (this.pos.y <= hitSky || this.collided) {
             game.data.start = false;
             me.audio.play("lose");
+            // if(game.data.life == 0){ this.endAnimation(); }
             this.endAnimation();
             return false;
         }
@@ -86,6 +87,7 @@ game.BirdEntity = me.Entity.extend({
         if (obj.type === 'pipe' || obj.type === 'ground') {
             me.device.vibrate(500);
             this.collided = true;
+            // game.data.life--;
         }
         // remove the hit box
         if (obj.type === 'hit') {
@@ -115,7 +117,6 @@ game.BirdEntity = me.Entity.extend({
     }
 
 });
-
 
 game.PipeEntity = me.Entity.extend({
     init: function(x, y) {
