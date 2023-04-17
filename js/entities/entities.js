@@ -70,26 +70,33 @@ game.BirdEntity = me.Entity.extend({
         this.renderable.currentTransform.rotate(this.currentAngle);
         me.Rect.prototype.updateBounds.apply(this);
 
-        var hitSky = -80; // bird height + 20px
-        if (this.pos.y <= hitSky || this.collided) {
-            if(game.data.life == 0){
-                game.data.start = false;
-                me.audio.play("lose");
-                this.endAnimation();
-                return false;
-            }
+        if(game.data.life <= 0){
+            game.data.start = false;
+            me.audio.play("lose");
+            this.endAnimation();
+            return false;
         }
+
+        var hitSky = -80; // bird height + 20px
+        
+        // if (this.pos.y <= hitSky || this.collided) {
+        //     game.data.start = false;
+        //     me.audio.play("lose");
+        //     this.endAnimation();
+        //     return false;
+        // }
+        
         me.collision.check(this);
         return true;
     },
 
     onCollision: function(response) {
         var obj = response.b;
-        game.data.life--;
+        // game.data.life--;
         if (obj.type === 'pipe' || obj.type === 'ground') {
             me.device.vibrate(500);
             this.collided = true;
-            // game.data.life--;
+            game.data.life--;
         }
         // remove the hit box
         if (obj.type === 'hit') {
