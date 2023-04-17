@@ -18,6 +18,12 @@ Play online at http://ellisonleao.github.io/clumsy-bird/
 npm install
 ```
 
+Build the project using:
+
+```
+grunt uglify
+```
+
 Then just type on your shell:
 
 ```
