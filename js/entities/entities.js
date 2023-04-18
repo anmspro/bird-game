@@ -49,7 +49,6 @@ game.BirdEntity = me.Entity.extend({
             this.angleTween.stop();
             this.flyTween.stop();
 
-
             this.flyTween.to({y: currentPos - 72}, 50);
             this.flyTween.start();
 
@@ -92,11 +91,18 @@ game.BirdEntity = me.Entity.extend({
 
     onCollision: function(response) {
         var obj = response.b;
-        // game.data.life--;
+        
         if (obj.type === 'pipe' || obj.type === 'ground') {
             me.device.vibrate(500);
             this.collided = true;
             game.data.life--;
+            
+            // game.data.start = true;
+
+            // me.state.change(me.state.PLAY);
+            // me.state.change(me.state.GAME_OVER)
+            // this.collided = false;
+            // this.endAnimation();
         }
         // remove the hit box
         if (obj.type === 'hit') {
