@@ -79,12 +79,19 @@ game.BirdEntity = me.Entity.extend({
         var hitSky = -80; // bird height + 20px
         
         if (this.pos.y <= hitSky || this.collided) {
-            // if(game.data.life <=0){
-                game.data.start = false;
-                me.audio.play("lose");
-                this.endAnimation();
-                return false;
-        // }
+            axios.patch('http://127.0.0.1:8000/api/players/1', 
+            {
+                score: game.data.steps,
+                life: game.data.life,
+                top_score: game.data.topSteps
+            }
+            ).then(function (response) {
+                console.log(response.data);
+            });
+            game.data.start = false;
+            me.audio.play("lose");
+            this.endAnimation();
+            return false;
         }
         
         me.collision.check(this);
@@ -98,13 +105,6 @@ game.BirdEntity = me.Entity.extend({
             me.device.vibrate(500);
             this.collided = true;
             game.data.life--;
-            
-            // game.data.start = true;
-
-            // me.state.change(me.state.PLAY);
-            // me.state.change(me.state.GAME_OVER)
-            // this.collided = false;
-            // this.endAnimation();
         }
         // remove the hit box
         if (obj.type === 'hit') {

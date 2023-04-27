@@ -68,9 +68,15 @@ game.GameOverScreen = me.ScreenObject.extend({
                     [0, 0, me.game.viewport.width/2, me.game.viewport.height/2]
                 );
                 this.font = new me.Font('gamefont', 40, 'black', 'left');
+                axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
+                    game.data.score = response.data.score;
+                    game.data.topSteps = response.data.top_score;
+                    game.data.life = response.data.life;
+                    console.log(response.data);
+                });
                 this.steps = 'Score: ' + game.data.steps.toString();
                 this.topSteps= 'Highest Score: ' + me.save.topSteps.toString();
-                this.lifes= 'Life: ' + game.data.life.toString();
+                this.life= 'Life: ' + game.data.life.toString();
             },
 
             draw: function (renderer) {
@@ -98,7 +104,7 @@ game.GameOverScreen = me.ScreenObject.extend({
                 //Remaining lives
                 this.font.draw(
                     renderer,
-                    this.lifes,
+                    this.life,
                     me.game.viewport.width/2 - stepsText.width/2 - 60,
                     me.game.viewport.height/2 + 100
                 );

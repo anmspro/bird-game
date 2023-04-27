@@ -1,14 +1,8 @@
-// const data = require('./db.js');
-// console.log(data);
-
 var game = {
     data: {
         score : 0,
         steps: 0,
-        life: 3,
-        // score : user.score,
-        // steps: user.score,
-        // life: user.life,
+        life: 5,
         start: false,
         newHiScore: false,
         muted: true
@@ -38,6 +32,16 @@ var game = {
     ],
 
     "onload": function() {
+        axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
+            game.data.life = response.data.life;
+            
+        });
+        if(game.data.life <= 0){
+            game.data.start = false;
+            me.audio.play("lose");
+            this.endAnimation();
+            return false;
+        }
         if (!me.video.init(900, 600, {
         // if (!me.video.init(600, 900, {
             wrapper: "screen",

@@ -30,7 +30,7 @@ game.HUD.ScoreItem = me.Renderable.extend({
 
         this.font = new me.Font('gamefont', 40, 'red', 'left');
         this.steps = 'Steps: ' + game.data.steps.toString();
-        this.lifes= 'Life: ' + game.data.life.toString();
+        this.life= 'Life: ' + game.data.life.toString();
 
         // make sure we use screen coordinates
         this.floating = true;
@@ -38,6 +38,9 @@ game.HUD.ScoreItem = me.Renderable.extend({
 
     draw: function (renderer) {
         if (game.data.start && me.state.isCurrent(me.state.PLAY)) {
+            
+            // TODO: data to be fetched from backend
+
             this.font.draw(renderer, 'Life: ' + game.data.life.toString(), me.game.viewport.width/2 - 200, 10);
             this.font.draw(renderer, 'Score: ' + game.data.steps.toString(), me.game.viewport.width/2 + 50, 10);
         }
