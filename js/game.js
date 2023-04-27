@@ -34,7 +34,7 @@ var game = {
     "onload": function() {
         axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
             game.data.life = response.data.life;
-            
+            me.save.topSteps = top_score;
         });
         if(game.data.life <= 0){
             game.data.start = false;

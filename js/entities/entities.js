@@ -83,7 +83,7 @@ game.BirdEntity = me.Entity.extend({
             {
                 score: game.data.steps,
                 life: game.data.life,
-                top_score: game.data.topSteps
+                top_score: me.save.topSteps
             }
             ).then(function (response) {
                 console.log(response.data);

@@ -18,7 +18,6 @@ game.PlayScreen = me.ScreenObject.extend({
         
         axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
             game.data.life = response.data.life;
-            console.log(response.data);
         });
 
         game.data.score = 0;

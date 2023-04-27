@@ -13,11 +13,28 @@ game.GameOverScreen = me.ScreenObject.extend({
         };
         me.save.add(this.savedData);
 
+        // axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
+        //     me.save.topSteps = response.data.top_score;
+            
+        // });
+
         if (!me.save.topSteps) me.save.add({topSteps: game.data.steps});
         if (game.data.steps > me.save.topSteps) {
             me.save.topSteps = game.data.steps;
             game.data.newHiScore = true;
+            // axios.patch('http://127.0.0.1:8000/api/players/1', 
+            // {
+            //     top_score: me.save.topSteps
+            // }
+            // );
         }
+
+        axios.patch('http://127.0.0.1:8000/api/players/1', 
+            {
+                top_score: me.save.topSteps
+            }
+            );
+
         me.input.bindKey(me.input.KEY.ENTER, "enter", true);
         me.input.bindKey(me.input.KEY.SPACE, "enter", false)
         me.input.bindPointer(me.input.pointer.LEFT, me.input.KEY.ENTER);
@@ -70,7 +87,7 @@ game.GameOverScreen = me.ScreenObject.extend({
                 this.font = new me.Font('gamefont', 40, 'black', 'left');
                 axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
                     game.data.score = response.data.score;
-                    game.data.topSteps = response.data.top_score;
+                    // me.save.topSteps = response.data.top_score;
                     game.data.life = response.data.life;
                     console.log(response.data);
                 });
