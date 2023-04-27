@@ -68,8 +68,8 @@ game.GameOverScreen = me.ScreenObject.extend({
                     [0, 0, me.game.viewport.width/2, me.game.viewport.height/2]
                 );
                 this.font = new me.Font('gamefont', 40, 'black', 'left');
-                this.steps = 'Steps: ' + game.data.steps.toString();
-                this.topSteps= 'Higher Step: ' + me.save.topSteps.toString();
+                this.steps = 'Score: ' + game.data.steps.toString();
+                this.topSteps= 'Highest Score: ' + me.save.topSteps.toString();
                 this.lifes= 'Life: ' + game.data.life.toString();
             },
 

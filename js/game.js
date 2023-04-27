@@ -1,8 +1,14 @@
+// const data = require('./db.js');
+// console.log(data);
+
 var game = {
     data: {
         score : 0,
         steps: 0,
         life: 3,
+        // score : user.score,
+        // steps: user.score,
+        // life: user.life,
         start: false,
         newHiScore: false,
         muted: true

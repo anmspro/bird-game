@@ -78,12 +78,14 @@ game.BirdEntity = me.Entity.extend({
 
         var hitSky = -80; // bird height + 20px
         
-        // if (this.pos.y <= hitSky || this.collided) {
-        //     game.data.start = false;
-        //     me.audio.play("lose");
-        //     this.endAnimation();
-        //     return false;
+        if (this.pos.y <= hitSky || this.collided) {
+            // if(game.data.life <=0){
+                game.data.start = false;
+                me.audio.play("lose");
+                this.endAnimation();
+                return false;
         // }
+        }
         
         me.collision.check(this);
         return true;
