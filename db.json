@@ -1,5 +1,5 @@
-
-var user = [
+{
+    "user": [
         {
             "name": "flappy",
             "id": 1,
@@ -8,3 +8,4 @@ var user = [
             "remaining_life": 5
         }
     ]
+}
