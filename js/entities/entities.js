@@ -83,7 +83,8 @@ game.BirdEntity = me.Entity.extend({
             {
                 score: game.data.steps,
                 life: game.data.life,
-                top_score: me.save.topSteps
+                top_score: me.save.topSteps,
+                // top_score: game.data.top_score
             }
             ).then(function (response) {
                 console.log(response.data);
@@ -110,6 +111,7 @@ game.BirdEntity = me.Entity.extend({
         if (obj.type === 'hit') {
             me.game.world.removeChildNow(obj);
             game.data.steps++;
+            game.data.score++;
             me.audio.play('hit');
         }
     },

@@ -1,6 +1,8 @@
 var game = {
     data: {
         score : 0,
+        top_score: 0,
+        total_score: 0,
         steps: 0,
         life: 5,
         start: false,
@@ -10,8 +12,8 @@ var game = {
 
     resources: [
         // images
-        {name: "bg", type:"image", src: "data/img/bg.png"},
-        // {name: "bg", type:"image", src: "data/img/bg1.png"},
+        // {name: "bg", type:"image", src: "data/img/bg.png"},
+        {name: "bg", type:"image", src: "data/img/robi_tamim_bg.png"},
         {name: "clumsy", type:"image", src: "data/img/clumsy.png"},
         {name: "pipe", type:"image", src: "data/img/pipe.png"},
         {name: "logo", type:"image", src: "data/img/logo.png"},
@@ -34,7 +36,9 @@ var game = {
     "onload": function() {
         axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
             game.data.life = response.data.life;
-            me.save.topSteps = top_score;
+            game.data.total_score = response.data.total_score;
+            game.data.top_score = response.data.top_score;
+            me.save.topSteps = response.data.top_score;
         });
         if(game.data.life <= 0){
             game.data.start = false;

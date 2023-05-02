@@ -30,6 +30,7 @@ game.HUD.ScoreItem = me.Renderable.extend({
 
         this.font = new me.Font('gamefont', 40, 'red', 'left');
         this.steps = 'Steps: ' + game.data.steps.toString();
+        this.score = 'Score: ' + game.data.score.toString();
         this.life= 'Life: ' + game.data.life.toString();
 
         // make sure we use screen coordinates
@@ -43,6 +44,7 @@ game.HUD.ScoreItem = me.Renderable.extend({
 
             this.font.draw(renderer, 'Life: ' + game.data.life.toString(), me.game.viewport.width/2 - 200, 10);
             this.font.draw(renderer, 'Score: ' + game.data.steps.toString(), me.game.viewport.width/2 + 50, 10);
+            // this.font.draw(renderer, 'Score: ' + game.data.score.toString(), me.game.viewport.width/2 + 50, 10);
         }
 
         // if (game.data.start && me.state.isCurrent(me.state.PLAY))
