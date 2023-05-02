@@ -30,4 +30,4 @@ Open your browser at `http://localhost:8001/`
 
 ## Making your customization
 
-See [CUSTOMIZING](https://github.com/ellisonleao/clumsy-bird/blob/master/CUSTOMIZING.md)
+See [CUSTOMIZING](https://github.com/anmspro/bird-game/blob/master/CUSTOMIZING.md)
