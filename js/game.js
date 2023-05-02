@@ -34,18 +34,36 @@ var game = {
     ],
 
     "onload": function() {
-        axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
-            game.data.life = response.data.life;
-            game.data.total_score = response.data.total_score;
-            game.data.top_score = response.data.top_score;
-            me.save.topSteps = response.data.top_score;
-        });
-        if(game.data.life <= 0){
-            game.data.start = false;
-            me.audio.play("lose");
-            this.endAnimation();
-            return false;
-        }
+
+        const sendGetRequest = async () => {
+            try {
+                const response = await axios.get('http://127.0.0.1:8000/api/players/1');
+                // console.log(response.data);
+                game.data.life = response.data.life;
+                game.data.total_score = response.data.total_score;
+                game.data.top_score = response.data.top_score;
+                me.save.topSteps = response.data.top_score;
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        
+        sendGetRequest();
+
+        // axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
+        //     game.data.life = response.data.life;
+        //     game.data.total_score = response.data.total_score;
+        //     game.data.top_score = response.data.top_score;
+        //     me.save.topSteps = response.data.top_score;
+        // });
+
+        // if(game.data.life <= 0){
+        //     game.data.start = false;
+        //     me.audio.play("lose");
+        //     this.endAnimation();
+        //     return false;
+        // }
+
         if (!me.video.init(900, 600, {
         // if (!me.video.init(600, 900, {
             wrapper: "screen",
@@ -62,6 +80,7 @@ var game = {
     "loaded": function() {
         me.state.set(me.state.MENU, new game.TitleScreen());
         me.state.set(me.state.PLAY, new game.PlayScreen());
+        me.state.set(me.state.GAME_END, new game.GameEnd());
         me.state.set(me.state.GAME_OVER, new game.GameOverScreen());
 
         me.input.bindKey(me.input.KEY.SPACE, "fly", true);

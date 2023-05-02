@@ -70,6 +70,7 @@ game.BirdEntity = me.Entity.extend({
         me.Rect.prototype.updateBounds.apply(this);
 
         if(game.data.life <= 0){
+            // console.log('end game')
             game.data.start = false;
             me.audio.play("lose");
             this.endAnimation();
@@ -79,16 +80,36 @@ game.BirdEntity = me.Entity.extend({
         var hitSky = -80; // bird height + 20px
         
         if (this.pos.y <= hitSky || this.collided) {
-            axios.patch('http://127.0.0.1:8000/api/players/1', 
-            {
-                score: game.data.steps,
-                life: game.data.life,
-                top_score: me.save.topSteps,
-                // top_score: game.data.top_score
-            }
-            ).then(function (response) {
-                console.log(response.data);
-            });
+
+            const sendPatchRequest = async () => {
+                try {
+                    const response = await axios.patch('http://127.0.0.1:8000/api/players/1', 
+                    {
+                        score: game.data.steps,
+                        life: game.data.life,
+                        top_score: me.save.topSteps,
+                        // top_score: game.data.top_score
+                    });
+                    // console.log(response.data);
+
+                } catch (err) {
+                    console.error(err);
+                }
+            };
+            
+            sendPatchRequest();
+
+            // axios.patch('http://127.0.0.1:8000/api/players/1', 
+            // {
+            //     score: game.data.steps,
+            //     life: game.data.life,
+            //     top_score: me.save.topSteps,
+            //     // top_score: game.data.top_score
+            // }
+            // ).then(function (response) {
+            //     console.log(response.data);
+            // });
+
             game.data.start = false;
             me.audio.play("lose");
             this.endAnimation();
@@ -131,6 +152,25 @@ game.BirdEntity = me.Entity.extend({
             .to({y: finalPos}, 1000)
             .onComplete(function() {
                 me.state.change(me.state.GAME_OVER);
+            });
+        this.endTween.start();
+    },
+
+    endGame: function() {
+        me.game.viewport.fadeOut("#fff", 100);
+        var currentPos = this.pos.y;
+        this.endTween = new me.Tween(this.pos);
+        this.endTween.easing(me.Tween.Easing.Exponential.InOut);
+
+        this.flyTween.stop();
+        this.renderable.currentTransform.identity();
+        this.renderable.currentTransform.rotate(Number.prototype.degToRad(90));
+        var finalPos = me.game.viewport.height - this.renderable.width/2 - 96;
+        this.endTween
+            .to({y: currentPos}, 1000)
+            .to({y: finalPos}, 1000)
+            .onComplete(function() {
+                me.state.change(me.state.GAME_END);
             });
         this.endTween.start();
     }

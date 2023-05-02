@@ -20,7 +20,6 @@ game.HUD.Container = me.Container.extend({
     }
 });
 
-
 game.HUD.ScoreItem = me.Renderable.extend({
     init: function(x, y) {
         this._super(me.Renderable, "init", [x, y, 10, 10]);

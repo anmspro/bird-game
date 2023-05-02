@@ -16,9 +16,21 @@ game.PlayScreen = me.ScreenObject.extend({
 
         me.input.bindKey(me.input.KEY.SPACE, "fly", true);
         
-        axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
-            game.data.life = response.data.life;
-        });
+        // axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
+        //     game.data.life = response.data.life;
+        // });
+
+        const sendGetRequest = async () => {
+            try {
+                const response = await axios.get('http://127.0.0.1:8000/api/players/1');
+                // console.log(response.data);
+                game.data.life = response.data.life;
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        
+        sendGetRequest();
 
         game.data.score = 0;
         game.data.steps = 0;

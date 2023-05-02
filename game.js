@@ -34,18 +34,36 @@ var game = {
     ],
 
     "onload": function() {
-        axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
-            game.data.life = response.data.life;
-            game.data.total_score = response.data.total_score;
-            game.data.top_score = response.data.top_score;
-            me.save.topSteps = response.data.top_score;
-        });
-        if(game.data.life <= 0){
-            game.data.start = false;
-            me.audio.play("lose");
-            this.endAnimation();
-            return false;
-        }
+
+        const sendGetRequest = async () => {
+            try {
+                const response = await axios.get('http://127.0.0.1:8000/api/players/1');
+                // console.log(response.data);
+                game.data.life = response.data.life;
+                game.data.total_score = response.data.total_score;
+                game.data.top_score = response.data.top_score;
+                me.save.topSteps = response.data.top_score;
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        
+        sendGetRequest();
+
+        // axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
+        //     game.data.life = response.data.life;
+        //     game.data.total_score = response.data.total_score;
+        //     game.data.top_score = response.data.top_score;
+        //     me.save.topSteps = response.data.top_score;
+        // });
+
+        // if(game.data.life <= 0){
+        //     game.data.start = false;
+        //     me.audio.play("lose");
+        //     this.endAnimation();
+        //     return false;
+        // }
+
         if (!me.video.init(900, 600, {
         // if (!me.video.init(600, 900, {
             wrapper: "screen",
@@ -62,6 +80,7 @@ var game = {
     "loaded": function() {
         me.state.set(me.state.MENU, new game.TitleScreen());
         me.state.set(me.state.PLAY, new game.PlayScreen());
+        me.state.set(me.state.GAME_END, new game.GameEnd());
         me.state.set(me.state.GAME_OVER, new game.GameOverScreen());
 
         me.input.bindKey(me.input.KEY.SPACE, "fly", true);
@@ -76,7 +95,6 @@ var game = {
         me.state.change(me.state.MENU);
     }
 };
-
 
 game.BirdEntity = me.Entity.extend({
     init: function(x, y) {
@@ -150,6 +168,7 @@ game.BirdEntity = me.Entity.extend({
         me.Rect.prototype.updateBounds.apply(this);
 
         if(game.data.life <= 0){
+            // console.log('end game')
             game.data.start = false;
             me.audio.play("lose");
             this.endAnimation();
@@ -159,16 +178,36 @@ game.BirdEntity = me.Entity.extend({
         var hitSky = -80; // bird height + 20px
         
         if (this.pos.y <= hitSky || this.collided) {
-            axios.patch('http://127.0.0.1:8000/api/players/1', 
-            {
-                score: game.data.steps,
-                life: game.data.life,
-                top_score: me.save.topSteps,
-                // top_score: game.data.top_score
-            }
-            ).then(function (response) {
-                console.log(response.data);
-            });
+
+            const sendPatchRequest = async () => {
+                try {
+                    const response = await axios.patch('http://127.0.0.1:8000/api/players/1', 
+                    {
+                        score: game.data.steps,
+                        life: game.data.life,
+                        top_score: me.save.topSteps,
+                        // top_score: game.data.top_score
+                    });
+                    // console.log(response.data);
+
+                } catch (err) {
+                    console.error(err);
+                }
+            };
+            
+            sendPatchRequest();
+
+            // axios.patch('http://127.0.0.1:8000/api/players/1', 
+            // {
+            //     score: game.data.steps,
+            //     life: game.data.life,
+            //     top_score: me.save.topSteps,
+            //     // top_score: game.data.top_score
+            // }
+            // ).then(function (response) {
+            //     console.log(response.data);
+            // });
+
             game.data.start = false;
             me.audio.play("lose");
             this.endAnimation();
@@ -211,6 +250,25 @@ game.BirdEntity = me.Entity.extend({
             .to({y: finalPos}, 1000)
             .onComplete(function() {
                 me.state.change(me.state.GAME_OVER);
+            });
+        this.endTween.start();
+    },
+
+    endGame: function() {
+        me.game.viewport.fadeOut("#fff", 100);
+        var currentPos = this.pos.y;
+        this.endTween = new me.Tween(this.pos);
+        this.endTween.easing(me.Tween.Easing.Exponential.InOut);
+
+        this.flyTween.stop();
+        this.renderable.currentTransform.identity();
+        this.renderable.currentTransform.rotate(Number.prototype.degToRad(90));
+        var finalPos = me.game.viewport.height - this.renderable.width/2 - 96;
+        this.endTween
+            .to({y: currentPos}, 1000)
+            .to({y: finalPos}, 1000)
+            .onComplete(function() {
+                me.state.change(me.state.GAME_END);
             });
         this.endTween.start();
     }
@@ -360,7 +418,6 @@ game.HUD.Container = me.Container.extend({
     }
 });
 
-
 game.HUD.ScoreItem = me.Renderable.extend({
     init: function(x, y) {
         this._super(me.Renderable, "init", [x, y, 10, 10]);
@@ -438,9 +495,25 @@ game.TitleScreen = me.ScreenObject.extend({
         me.input.bindKey(me.input.KEY.SPACE, "enter", true);
         me.input.bindPointer(me.input.pointer.LEFT, me.input.KEY.ENTER);
 
+        const sendGetRequest = async () => {
+            try {
+                const response = await axios.get('http://127.0.0.1:8000/api/players/1');
+                game.data.life = response.data.life;
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        
+        sendGetRequest();
+
         this.handler = me.event.subscribe(me.event.KEYDOWN, function (action, keyCode, edge) {
             if (action === "enter") {
-                me.state.change(me.state.PLAY);
+                if(game.data.life <= 0) {
+                    me.state.change(me.state.GAME_END);
+                }
+                else {
+                    me.state.change(me.state.PLAY);
+                }
             }
         });
 
@@ -512,9 +585,21 @@ game.PlayScreen = me.ScreenObject.extend({
 
         me.input.bindKey(me.input.KEY.SPACE, "fly", true);
         
-        axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
-            game.data.life = response.data.life;
-        });
+        // axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
+        //     game.data.life = response.data.life;
+        // });
+
+        const sendGetRequest = async () => {
+            try {
+                const response = await axios.get('http://127.0.0.1:8000/api/players/1');
+                // console.log(response.data);
+                game.data.life = response.data.life;
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        
+        sendGetRequest();
 
         game.data.score = 0;
         game.data.steps = 0;
@@ -579,30 +664,40 @@ game.GameOverScreen = me.ScreenObject.extend({
             score: game.data.score,
             steps: game.data.steps,
             life: game.data.life
+            // topSteps: game.data.topSteps
         };
         me.save.add(this.savedData);
 
-        // axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
-        //     me.save.topSteps = response.data.top_score;
-            
-        // });
-
-        if (!me.save.topSteps) me.save.add({topSteps: game.data.steps});
+        // if (!me.save.topSteps) me.save.add({topSteps: game.data.steps});
         if (game.data.steps > me.save.topSteps) {
             me.save.topSteps = game.data.steps;
             game.data.newHiScore = true;
-            // axios.patch('http://127.0.0.1:8000/api/players/1', 
-            // {
-            //     top_score: me.save.topSteps
-            // }
-            // );
         }
 
-        axios.patch('http://127.0.0.1:8000/api/players/1', 
-            {
-                top_score: me.save.topSteps
+        // axios.patch('http://127.0.0.1:8000/api/players/1', 
+        // {
+        //     top_score: me.save.topSteps,
+        //     life: game.data.life
+        // }
+        // ).then(function (response) {
+        //     console.log(response.data);
+        // });
+
+        const sendPatchRequest = async () => {
+            try {
+                const response = await axios.patch('http://127.0.0.1:8000/api/players/1', 
+                {
+                    top_score: me.save.topSteps,
+                    life: game.data.life
+                });
+                // console.log(response.data);
+
+            } catch (err) {
+                console.error(err);
             }
-            );
+        };
+        
+        sendPatchRequest();
 
         me.input.bindKey(me.input.KEY.ENTER, "enter", true);
         me.input.bindKey(me.input.KEY.SPACE, "enter", false)
@@ -654,12 +749,26 @@ game.GameOverScreen = me.ScreenObject.extend({
                     [0, 0, me.game.viewport.width/2, me.game.viewport.height/2]
                 );
                 this.font = new me.Font('gamefont', 40, 'black', 'left');
-                axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
-                    game.data.score = response.data.score;
-                    // me.save.topSteps = response.data.top_score;
-                    game.data.life = response.data.life;
-                    console.log(response.data);
-                });
+                
+                // axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
+                //     game.data.score = response.data.score;
+                //     // me.save.topSteps = response.data.top_score;
+                //     game.data.life = response.data.life;
+                // });
+
+                const sendGetRequest = async () => {
+                    try {
+                        const response = await axios.get('http://127.0.0.1:8000/api/players/1');
+                        // console.log(response.data);
+                        game.data.score = response.data.score;
+                        game.data.life = response.data.life;
+                    } catch (err) {
+                        console.error(err);
+                    }
+                };
+                
+                sendGetRequest();
+
                 this.steps = 'Score: ' + game.data.steps.toString();
                 this.topSteps= 'Highest Score: ' + me.save.topSteps.toString();
                 this.life= 'Life: ' + game.data.life.toString();
@@ -692,6 +801,144 @@ game.GameOverScreen = me.ScreenObject.extend({
                     renderer,
                     this.life,
                     me.game.viewport.width/2 - stepsText.width/2 - 60,
+                    me.game.viewport.height/2 + 100
+                );
+            }
+        }));
+        me.game.world.addChild(this.dialog, 12);
+    },
+
+    onDestroyEvent: function() {
+        // unregister the event
+        me.event.unsubscribe(this.handler);
+        me.input.unbindKey(me.input.KEY.ENTER);
+        me.input.unbindKey(me.input.KEY.SPACE);
+        me.input.unbindPointer(me.input.pointer.LEFT);
+        this.ground1 = null;
+        this.ground2 = null;
+        this.font = null;
+        me.audio.stop("theme");
+    }
+});
+
+game.GameEnd = me.ScreenObject.extend({
+    init: function() {
+        this.savedData = null;
+        this.handler = null;
+    },
+
+    onResetEvent: function() {
+        //save section
+        this.savedData = {
+            score: game.data.score,
+            steps: game.data.steps,
+            life: game.data.life
+            // topSteps: game.data.topSteps
+        };
+        me.save.add(this.savedData);
+
+        me.input.bindKey(me.input.KEY.ENTER, "enter", true);
+        me.input.bindKey(me.input.KEY.SPACE, "enter", false)
+        me.input.bindPointer(me.input.pointer.LEFT, me.input.KEY.ENTER);
+
+        this.handler = me.event.subscribe(me.event.KEYDOWN,
+            function (action, keyCode, edge) {
+                if (action === "enter") {
+                    me.state.change(me.state.MENU);
+                }
+            });
+
+        me.game.world.addChild(new me.Sprite(
+            me.game.viewport.width/2,
+            me.game.viewport.height/2 - 100,
+            {image: 'gameover'}
+        ), 12);
+
+        var gameOverBG = new me.Sprite(
+            me.game.viewport.width/2,
+            me.game.viewport.height/2,
+            {image: 'gameoverbg'}
+        );
+        me.game.world.addChild(gameOverBG, 10);
+
+        me.game.world.addChild(new BackgroundLayer('bg', 1));
+
+        // ground
+        this.ground1 = me.pool.pull('ground', 0, me.game.viewport.height - 96);
+        this.ground2 = me.pool.pull('ground', me.game.viewport.width,
+            me.video.renderer.getHeight() - 96);
+        me.game.world.addChild(this.ground1, 11);
+        me.game.world.addChild(this.ground2, 11);
+
+        // add the dialog with the game information
+        if (game.data.newHiScore) {
+            var newRect = new me.Sprite(
+                gameOverBG.width/2,
+                gameOverBG.height/2,
+                {image: 'new'}
+            );
+            me.game.world.addChild(newRect, 12);
+        }
+
+        this.dialog = new (me.Renderable.extend({
+            // constructor
+            init: function() {
+                this._super(me.Renderable, 'init',
+                    [0, 0, me.game.viewport.width/2, me.game.viewport.height/2]
+                );
+                this.font = new me.Font('gamefont', 40, 'black', 'left');
+                
+                // axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
+                //     game.data.score = response.data.score;
+                //     // me.save.topSteps = response.data.top_score;
+                //     game.data.life = response.data.life;
+                // });
+
+                const sendGetRequest = async () => {
+                    try {
+                        const response = await axios.get('http://127.0.0.1:8000/api/players/1');
+                        // console.log(response.data);
+                        game.data.score = response.data.score;
+                        game.data.life = response.data.life;
+                    } catch (err) {
+                        console.error(err);
+                    }
+                };
+                
+                sendGetRequest();
+
+                this.steps = 'Score: ' + game.data.steps.toString();
+                this.topSteps= 'Highest Score: ' + me.save.topSteps.toString();
+                this.life= 'You have no lives Left!';
+            },
+
+            draw: function (renderer) {
+                var stepsText = this.font.measureText(renderer, this.steps);
+                var topStepsText = this.font.measureText(renderer, this.topSteps);
+                var scoreText = this.font.measureText(renderer, this.score);
+                var lifeText = this.font.measureText(renderer, this.life);
+
+                //steps
+                this.font.draw(
+                    renderer,
+                    this.steps,
+                    me.game.viewport.width/2 - stepsText.width/2 - 140,
+                    me.game.viewport.height/2
+                );
+
+                //top score
+                this.font.draw(
+                    renderer,
+                    this.topSteps,
+                    me.game.viewport.width/2 - stepsText.width/2 - 140,
+                    me.game.viewport.height/2 + 50
+                );
+                
+                //Remaining lives
+                this.font.draw(
+                    renderer,
+                    this.life,
+                    me.game.viewport.width/2 - stepsText.width/2 - 140,
                     me.game.viewport.height/2 + 100
                 );
             }

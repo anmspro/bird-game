@@ -1,4 +1,4 @@
-game.GameOverScreen = me.ScreenObject.extend({
+game.GameEnd = me.ScreenObject.extend({
     init: function() {
         this.savedData = null;
         this.handler = null;
@@ -13,37 +13,6 @@ game.GameOverScreen = me.ScreenObject.extend({
             // topSteps: game.data.topSteps
         };
         me.save.add(this.savedData);
-
-        // if (!me.save.topSteps) me.save.add({topSteps: game.data.steps});
-        if (game.data.steps > me.save.topSteps) {
-            me.save.topSteps = game.data.steps;
-            game.data.newHiScore = true;
-        }
-
-        // axios.patch('http://127.0.0.1:8000/api/players/1', 
-        // {
-        //     top_score: me.save.topSteps,
-        //     life: game.data.life
-        // }
-        // ).then(function (response) {
-        //     console.log(response.data);
-        // });
-
-        const sendPatchRequest = async () => {
-            try {
-                const response = await axios.patch('http://127.0.0.1:8000/api/players/1', 
-                {
-                    top_score: me.save.topSteps,
-                    life: game.data.life
-                });
-                // console.log(response.data);
-
-            } catch (err) {
-                console.error(err);
-            }
-        };
-        
-        sendPatchRequest();
 
         me.input.bindKey(me.input.KEY.ENTER, "enter", true);
         me.input.bindKey(me.input.KEY.SPACE, "enter", false)
@@ -117,7 +86,7 @@ game.GameOverScreen = me.ScreenObject.extend({
 
                 this.steps = 'Score: ' + game.data.steps.toString();
                 this.topSteps= 'Highest Score: ' + me.save.topSteps.toString();
-                this.life= 'Life: ' + game.data.life.toString();
+                this.life= 'You have no lives Left!';
             },
 
             draw: function (renderer) {
@@ -130,7 +99,7 @@ game.GameOverScreen = me.ScreenObject.extend({
                 this.font.draw(
                     renderer,
                     this.steps,
-                    me.game.viewport.width/2 - stepsText.width/2 - 60,
+                    me.game.viewport.width/2 - stepsText.width/2 - 140,
                     me.game.viewport.height/2
                 );
 
@@ -138,7 +107,7 @@ game.GameOverScreen = me.ScreenObject.extend({
                 this.font.draw(
                     renderer,
                     this.topSteps,
-                    me.game.viewport.width/2 - stepsText.width/2 - 60,
+                    me.game.viewport.width/2 - stepsText.width/2 - 140,
                     me.game.viewport.height/2 + 50
                 );
                 
@@ -146,7 +115,7 @@ game.GameOverScreen = me.ScreenObject.extend({
                 this.font.draw(
                     renderer,
                     this.life,
-                    me.game.viewport.width/2 - stepsText.width/2 - 60,
+                    me.game.viewport.width/2 - stepsText.width/2 - 140,
                     me.game.viewport.height/2 + 100
                 );
             }

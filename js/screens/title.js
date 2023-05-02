@@ -16,9 +16,25 @@ game.TitleScreen = me.ScreenObject.extend({
         me.input.bindKey(me.input.KEY.SPACE, "enter", true);
         me.input.bindPointer(me.input.pointer.LEFT, me.input.KEY.ENTER);
 
+        const sendGetRequest = async () => {
+            try {
+                const response = await axios.get('http://127.0.0.1:8000/api/players/1');
+                game.data.life = response.data.life;
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        
+        sendGetRequest();
+
         this.handler = me.event.subscribe(me.event.KEYDOWN, function (action, keyCode, edge) {
             if (action === "enter") {
-                me.state.change(me.state.PLAY);
+                if(game.data.life <= 0) {
+                    me.state.change(me.state.GAME_END);
+                }
+                else {
+                    me.state.change(me.state.PLAY);
+                }
             }
         });
 
