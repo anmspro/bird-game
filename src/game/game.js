@@ -14,7 +14,8 @@ var game = {
         // images
         // {name: "bg", type:"image", src: "data/img/bg.png"},
         {name: "bg", type:"image", src: "./../../data/img/robi_tamim_bg.png"},
-        {name: "clumsy", type:"image", src: "./../../data/img/clumsy.png"},
+        // {name: "clumsy", type:"image", src: "./../../data/img/clumsy.png"},
+        {name: "clumsy", type:"image", src: "./../../data/img/football1_transparent.png"},
         {name: "pipe", type:"image", src: "./../../data/img/pipe.png"},
         {name: "logo", type:"image", src: "./../../data/img/logo.png"},
         {name: "ground", type:"image", src: "./../../data/img/ground.png"},

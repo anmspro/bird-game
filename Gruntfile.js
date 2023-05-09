@@ -1,6 +1,7 @@
 /*global module:false*/
 module.exports = function(grunt) {
     var sourceFiles = [
+        // 'src/login/login.js',
         'js/game.js',
         'js/entities/entities.js',
         'js/entities/HUD.js',
@@ -45,11 +46,12 @@ module.exports = function(grunt) {
         },
 
         connect : {
-            root : {
+            server : {
                 options : {
-                    port : process.env.PORT || 8001,
+                    port : 8001,
                     keepalive : true,
-                    host: '*'
+                    host: '*',
+                    base: 'localhost'
                 }
             }
         },
@@ -67,8 +69,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks("grunt-contrib-connect");
-    // grunt.loadNpmTasks("grunt-contrib-connect-es");
-
 
     // Default task.
     grunt.registerTask('default', ['uglify']);
