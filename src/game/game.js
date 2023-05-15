@@ -16,6 +16,7 @@ var game = {
         {name: "bg", type:"image", src: "./../../data/img/robi_tamim_bg.png"},
         // {name: "clumsy", type:"image", src: "./../../data/img/clumsy.png"},
         {name: "clumsy", type:"image", src: "./../../data/img/football1_transparent.png"},
+        {name: "character", type:"image", src: "./../../data/img/character_transparent.png"},
         {name: "pipe", type:"image", src: "./../../data/img/pipe.png"},
         {name: "logo", type:"image", src: "./../../data/img/logo.png"},
         {name: "ground", type:"image", src: "./../../data/img/ground.png"},
@@ -89,6 +90,7 @@ var game = {
         me.input.bindPointer(me.input.KEY.SPACE);
 
         me.pool.register("clumsy", game.BirdEntity);
+        me.pool.register("character", game.CharacterEntity);
         me.pool.register("pipe", game.PipeEntity, true);
         me.pool.register("hit", game.HitEntity, true);
         me.pool.register("ground", game.Ground, true);
@@ -112,7 +114,7 @@ game.BirdEntity = me.Entity.extend({
         this.renderable.addAnimation("flying", [0, 1, 2]);
         this.renderable.addAnimation("idle", [0]);
         this.renderable.setCurrentAnimation("flying");
-        //this.renderable.anchorPoint = new me.Vector2d(0.1, 0.5);
+        this.renderable.anchorPoint = new me.Vector2d(0.1, 0.5);
         this.body.removeShapeAt(0);
         this.body.addShape(new me.Ellipse(5, 5, 71, 51));
 
@@ -135,7 +137,7 @@ game.BirdEntity = me.Entity.extend({
 
     update: function(dt) {
         var that = this;
-        this.pos.x = 60;
+        this.pos.x = 100;
         if (!game.data.start) {
             return this._super(me.Entity, 'update', [dt]);
         }
@@ -169,7 +171,6 @@ game.BirdEntity = me.Entity.extend({
         me.Rect.prototype.updateBounds.apply(this);
 
         if(game.data.life <= 0){
-            // console.log('end game')
             game.data.start = false;
             me.audio.play("lose");
             this.endAnimation();
@@ -197,17 +198,6 @@ game.BirdEntity = me.Entity.extend({
             };
             
             sendPatchRequest();
-
-            // axios.patch('http://127.0.0.1:8000/api/players/1', 
-            // {
-            //     score: game.data.steps,
-            //     life: game.data.life,
-            //     top_score: me.save.topSteps,
-            //     // top_score: game.data.top_score
-            // }
-            // ).then(function (response) {
-            //     console.log(response.data);
-            // });
 
             game.data.start = false;
             me.audio.play("lose");
@@ -273,6 +263,90 @@ game.BirdEntity = me.Entity.extend({
             });
         this.endTween.start();
     }
+
+});
+
+game.CharacterEntity = me.Entity.extend({
+    init: function(x, y) {
+        var settings = {};
+        settings.image = 'character';
+        settings.width = 85;
+        settings.height = 120;
+
+        this._super(me.Entity, 'init', [x, y, settings]);
+        // this.alwaysUpdate = true;
+        // this.body.gravity = 0.2;
+        // this.maxAngleRotation = Number.prototype.degToRad(-30);
+        // this.maxAngleRotationDown = Number.prototype.degToRad(35);
+        // this.renderable.addAnimation("flying", [0, 1, 2]);
+        // this.renderable.addAnimation("idle", [0]);
+        // this.renderable.setCurrentAnimation("flying");
+        // this.renderable.anchorPoint = new me.Vector2d(0.1, 0.5);
+        this.body.removeShapeAt(0);
+        this.body.addShape(new me.Ellipse(5, 5, 71, 51));
+
+        // a tween object for the flying physic effect
+        // this.flyTween = new me.Tween(this.pos);
+        // this.flyTween.easing(me.Tween.Easing.Exponential.InOut);
+
+        // this.currentAngle = 0;
+        // this.angleTween = new me.Tween(this);
+        // this.angleTween.easing(me.Tween.Easing.Exponential.InOut);
+
+        // end animation tween
+        // this.endTween = null;
+
+        // collision shape
+        // this.collided = false;
+
+        // this.gravityForce = 0.2;
+    },
+
+    update: function(dt) {
+        var that = this;
+        this.pos.x = 20;
+        if (!game.data.start) {
+            return this._super(me.Entity, 'update', [dt]);
+        }
+        // this.renderable.currentTransform.identity();
+        var count_ = 0;
+        if (me.input.isKeyPressed('fly')) {
+            // me.audio.play('wing');
+            // this.gravityForce = 0.2;
+            // var currentPos = this.pos.y;
+
+            // this.angleTween.stop();
+            // this.flyTween.stop();
+
+            // this.flyTween.to({y: currentPos - 72}, 50);
+            // this.flyTween.start();
+
+            // this.angleTween.to({currentAngle: that.maxAngleRotation}, 50).onComplete(function(angle) {
+            //     that.renderable.currentTransform.rotate(that.maxAngleRotation);
+            // })
+            // this.angleTween.start();
+
+            count_++;
+            console.log(count_);
+            // this.renderable.addAnimation("flying", [0, 1, 2]);
+            this.renderable.addAnimation("flying", [count_%3]);
+            this.renderable.addAnimation("idle", [0]);
+            this.renderable.setCurrentAnimation("flying");
+
+        } else {
+            // this.gravityForce += 0.2;
+            // this.pos.y += me.timer.tick * this.gravityForce;
+            // this.currentAngle += Number.prototype.degToRad(3);
+            // if (this.currentAngle >= this.maxAngleRotationDown) {
+            //     this.renderable.currentTransform.identity();
+            //     this.currentAngle = this.maxAngleRotationDown;
+            // }
+        }
+        // this.renderable.currentTransform.rotate(this.currentAngle);
+        // me.Rect.prototype.updateBounds.apply(this);
+        
+        return true;
+    },
 
 });
 
@@ -438,8 +512,6 @@ game.HUD.ScoreItem = me.Renderable.extend({
     draw: function (renderer) {
         if (game.data.start && me.state.isCurrent(me.state.PLAY)) {
             
-            // TODO: data to be fetched from backend
-
             this.font.draw(renderer, 'Life: ' + game.data.life.toString(), me.game.viewport.width/2 - 200, 10);
             this.font.draw(renderer, 'Score: ' + game.data.steps.toString(), me.game.viewport.width/2 + 50, 10);
             // this.font.draw(renderer, 'Score: ' + game.data.score.toString(), me.game.viewport.width/2 + 50, 10);
@@ -585,15 +657,10 @@ game.PlayScreen = me.ScreenObject.extend({
         }
 
         me.input.bindKey(me.input.KEY.SPACE, "fly", true);
-        
-        // axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
-        //     game.data.life = response.data.life;
-        // });
 
         const sendGetRequest = async () => {
             try {
                 const response = await axios.get('http://127.0.0.1:8000/api/players/1');
-                // console.log(response.data);
                 game.data.life = response.data.life;
             } catch (err) {
                 console.error(err);
@@ -610,8 +677,7 @@ game.PlayScreen = me.ScreenObject.extend({
         me.game.world.addChild(new BackgroundLayer('bg', 1));
 
         this.ground1 = me.pool.pull('ground', 0, me.game.viewport.height - 96);
-        this.ground2 = me.pool.pull('ground', me.game.viewport.width,
-            me.game.viewport.height - 96);
+        this.ground2 = me.pool.pull('ground', me.game.viewport.width, me.game.viewport.height - 96);
         me.game.world.addChild(this.ground1, 11);
         me.game.world.addChild(this.ground2, 11);
 
@@ -620,6 +686,9 @@ game.PlayScreen = me.ScreenObject.extend({
 
         this.bird = me.pool.pull("clumsy", 60, me.game.viewport.height/2 - 100);
         me.game.world.addChild(this.bird, 10);
+        
+        this.character = me.pool.pull("character", 120, me.game.viewport.height/2 + 100);
+        me.game.world.addChild(this.character, 11);
 
         //inputs
         me.input.bindPointer(me.input.pointer.LEFT, me.input.KEY.SPACE);
@@ -646,6 +715,7 @@ game.PlayScreen = me.ScreenObject.extend({
         // free the stored instance
         this.HUD = null;
         this.bird = null;
+        this.character = null;
         this.ground1 = null;
         this.ground2 = null;
         me.input.unbindKey(me.input.KEY.SPACE);
