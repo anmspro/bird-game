@@ -12,11 +12,14 @@ var game = {
 
     resources: [
         // images
-        // {name: "bg", type:"image", src: "data/img/bg.png"},
+        {name: "bg0", type:"image", src: "./../../data/img/bg.png"},
         {name: "bg", type:"image", src: "./../../data/img/robi_tamim_bg.png"},
         // {name: "clumsy", type:"image", src: "./../../data/img/clumsy.png"},
         {name: "clumsy", type:"image", src: "./../../data/img/football1_transparent.png"},
         {name: "character", type:"image", src: "./../../data/img/character_transparent.png"},
+        {name: "character_front", type:"image", src: "./../../data/img/front_small.png"},
+        {name: "character_side1", type:"image", src: "./../../data/img/side1_small.png"},
+        {name: "character_side2", type:"image", src: "./../../data/img/side2_small.png"},
         {name: "pipe", type:"image", src: "./../../data/img/pipe.png"},
         {name: "logo", type:"image", src: "./../../data/img/logo.png"},
         {name: "ground", type:"image", src: "./../../data/img/ground.png"},
@@ -40,7 +43,6 @@ var game = {
         const sendGetRequest = async () => {
             try {
                 const response = await axios.get('http://127.0.0.1:8000/api/players/1');
-                // console.log(response.data);
                 game.data.life = response.data.life;
                 game.data.total_score = response.data.total_score;
                 game.data.top_score = response.data.top_score;
@@ -141,8 +143,11 @@ game.BirdEntity = me.Entity.extend({
         if (!game.data.start) {
             return this._super(me.Entity, 'update', [dt]);
         }
+        
         this.renderable.currentTransform.identity();
+        
         if (me.input.isKeyPressed('fly')) {
+            // console.log('bird clicked')
             me.audio.play('wing');
             this.gravityForce = 0.2;
             var currentPos = this.pos.y;
@@ -269,82 +274,49 @@ game.BirdEntity = me.Entity.extend({
 game.CharacterEntity = me.Entity.extend({
     init: function(x, y) {
         var settings = {};
-        settings.image = 'character';
-        settings.width = 85;
-        settings.height = 120;
-
+        // settings.image = 'character';
+        settings.image = 'character_front';
+        // settings.width = 85;
+        settings.width = 87;
+        // settings.height = 120;
+        settings.height = 270;  
+        
         this._super(me.Entity, 'init', [x, y, settings]);
-        // this.alwaysUpdate = true;
-        // this.body.gravity = 0.2;
-        // this.maxAngleRotation = Number.prototype.degToRad(-30);
-        // this.maxAngleRotationDown = Number.prototype.degToRad(35);
-        // this.renderable.addAnimation("flying", [0, 1, 2]);
-        // this.renderable.addAnimation("idle", [0]);
-        // this.renderable.setCurrentAnimation("flying");
-        // this.renderable.anchorPoint = new me.Vector2d(0.1, 0.5);
+        this.alwaysUpdate = true;
+        this.body.gravity = 0.2;
+        this.maxAngleRotation = Number.prototype.degToRad(-30);
+        this.maxAngleRotationDown = Number.prototype.degToRad(35);
+        this.renderable.addAnimation("flying", [0, 1, 2]);
+        this.renderable.addAnimation("idle", [0]);
+        this.renderable.setCurrentAnimation("flying");
+        this.renderable.anchorPoint = new me.Vector2d(0.1, 0.5);
         this.body.removeShapeAt(0);
         this.body.addShape(new me.Ellipse(5, 5, 71, 51));
 
-        // a tween object for the flying physic effect
-        // this.flyTween = new me.Tween(this.pos);
-        // this.flyTween.easing(me.Tween.Easing.Exponential.InOut);
-
-        // this.currentAngle = 0;
-        // this.angleTween = new me.Tween(this);
-        // this.angleTween.easing(me.Tween.Easing.Exponential.InOut);
-
-        // end animation tween
-        // this.endTween = null;
-
-        // collision shape
-        // this.collided = false;
-
-        // this.gravityForce = 0.2;
+        this.collided = false;
     },
 
     update: function(dt) {
         var that = this;
-        this.pos.x = 20;
+        this.pos.x = 10;
+        // this.pos.x = 40;
         if (!game.data.start) {
             return this._super(me.Entity, 'update', [dt]);
         }
-        // this.renderable.currentTransform.identity();
-        var count_ = 0;
+        this.renderable.currentTransform.identity();
+        // console.log(count_++);
         if (me.input.isKeyPressed('fly')) {
-            // me.audio.play('wing');
-            // this.gravityForce = 0.2;
-            // var currentPos = this.pos.y;
-
-            // this.angleTween.stop();
-            // this.flyTween.stop();
-
-            // this.flyTween.to({y: currentPos - 72}, 50);
-            // this.flyTween.start();
-
-            // this.angleTween.to({currentAngle: that.maxAngleRotation}, 50).onComplete(function(angle) {
-            //     that.renderable.currentTransform.rotate(that.maxAngleRotation);
-            // })
-            // this.angleTween.start();
-
-            count_++;
-            console.log(count_);
-            // this.renderable.addAnimation("flying", [0, 1, 2]);
-            this.renderable.addAnimation("flying", [count_%3]);
-            this.renderable.addAnimation("idle", [0]);
-            this.renderable.setCurrentAnimation("flying");
-
-        } else {
-            // this.gravityForce += 0.2;
-            // this.pos.y += me.timer.tick * this.gravityForce;
-            // this.currentAngle += Number.prototype.degToRad(3);
-            // if (this.currentAngle >= this.maxAngleRotationDown) {
-            //     this.renderable.currentTransform.identity();
-            //     this.currentAngle = this.maxAngleRotationDown;
-            // }
+            console.log("character clicked");
+            // var settings = {};
+            this.settings.image = 'character_side1';
+            // that.settings.width = 85;
+            this.settings.width = 87;
+            // that.settings.height = 120;
+            this.settings.height = 270;
         }
-        // this.renderable.currentTransform.rotate(this.currentAngle);
-        // me.Rect.prototype.updateBounds.apply(this);
-        
+        // me.settings.image = 'character_side1'
+        // me.settings.width = 87;
+        // me.settings.height = 270;
         return true;
     },
 
@@ -546,6 +518,17 @@ var BackgroundLayer = me.ImageLayer.extend({
                 me.audio.enable();
             }
         }
+
+        // if(me.input.isKeyPressed('fly')) {
+        //     var settings = {};
+        //     settings.name = 'bg0';
+        //     settings.width = 900;
+        //     settings.height = 600;
+        //     settings.image = image;
+        //     settings.z = z;
+        //     settings.ratio = 1;
+        // }
+
         return true;
     }
 });

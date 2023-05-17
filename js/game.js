@@ -12,9 +12,14 @@ var game = {
 
     resources: [
         // images
-        // {name: "bg", type:"image", src: "data/img/bg.png"},
+        {name: "bg0", type:"image", src: "./../../data/img/bg.png"},
         {name: "bg", type:"image", src: "./../../data/img/robi_tamim_bg.png"},
-        {name: "clumsy", type:"image", src: "./../../data/img/clumsy.png"},
+        // {name: "clumsy", type:"image", src: "./../../data/img/clumsy.png"},
+        {name: "clumsy", type:"image", src: "./../../data/img/football1_transparent.png"},
+        {name: "character", type:"image", src: "./../../data/img/character_transparent.png"},
+        {name: "character_front", type:"image", src: "./../../data/img/front_small.png"},
+        {name: "character_side1", type:"image", src: "./../../data/img/side1_small.png"},
+        {name: "character_side2", type:"image", src: "./../../data/img/side2_small.png"},
         {name: "pipe", type:"image", src: "./../../data/img/pipe.png"},
         {name: "logo", type:"image", src: "./../../data/img/logo.png"},
         {name: "ground", type:"image", src: "./../../data/img/ground.png"},
@@ -38,7 +43,6 @@ var game = {
         const sendGetRequest = async () => {
             try {
                 const response = await axios.get('http://127.0.0.1:8000/api/players/1');
-                // console.log(response.data);
                 game.data.life = response.data.life;
                 game.data.total_score = response.data.total_score;
                 game.data.top_score = response.data.top_score;
@@ -50,7 +54,22 @@ var game = {
         
         sendGetRequest();
 
+        // axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
+        //     game.data.life = response.data.life;
+        //     game.data.total_score = response.data.total_score;
+        //     game.data.top_score = response.data.top_score;
+        //     me.save.topSteps = response.data.top_score;
+        // });
+
+        // if(game.data.life <= 0){
+        //     game.data.start = false;
+        //     me.audio.play("lose");
+        //     this.endAnimation();
+        //     return false;
+        // }
+
         if (!me.video.init(900, 600, {
+        // if (!me.video.init(600, 900, {
             wrapper: "screen",
             scale : "auto",
             scaleMethod: "fit"
@@ -73,6 +92,7 @@ var game = {
         me.input.bindPointer(me.input.KEY.SPACE);
 
         me.pool.register("clumsy", game.BirdEntity);
+        me.pool.register("character", game.CharacterEntity);
         me.pool.register("pipe", game.PipeEntity, true);
         me.pool.register("hit", game.HitEntity, true);
         me.pool.register("ground", game.Ground, true);

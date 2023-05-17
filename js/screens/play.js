@@ -15,15 +15,10 @@ game.PlayScreen = me.ScreenObject.extend({
         }
 
         me.input.bindKey(me.input.KEY.SPACE, "fly", true);
-        
-        // axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
-        //     game.data.life = response.data.life;
-        // });
 
         const sendGetRequest = async () => {
             try {
                 const response = await axios.get('http://127.0.0.1:8000/api/players/1');
-                // console.log(response.data);
                 game.data.life = response.data.life;
             } catch (err) {
                 console.error(err);
@@ -40,8 +35,7 @@ game.PlayScreen = me.ScreenObject.extend({
         me.game.world.addChild(new BackgroundLayer('bg', 1));
 
         this.ground1 = me.pool.pull('ground', 0, me.game.viewport.height - 96);
-        this.ground2 = me.pool.pull('ground', me.game.viewport.width,
-            me.game.viewport.height - 96);
+        this.ground2 = me.pool.pull('ground', me.game.viewport.width, me.game.viewport.height - 96);
         me.game.world.addChild(this.ground1, 11);
         me.game.world.addChild(this.ground2, 11);
 
@@ -50,6 +44,9 @@ game.PlayScreen = me.ScreenObject.extend({
 
         this.bird = me.pool.pull("clumsy", 60, me.game.viewport.height/2 - 100);
         me.game.world.addChild(this.bird, 10);
+        
+        this.character = me.pool.pull("character", 120, me.game.viewport.height/2 + 100);
+        me.game.world.addChild(this.character, 11);
 
         //inputs
         me.input.bindPointer(me.input.pointer.LEFT, me.input.KEY.SPACE);
@@ -76,6 +73,7 @@ game.PlayScreen = me.ScreenObject.extend({
         // free the stored instance
         this.HUD = null;
         this.bird = null;
+        this.character = null;
         this.ground1 = null;
         this.ground2 = null;
         me.input.unbindKey(me.input.KEY.SPACE);

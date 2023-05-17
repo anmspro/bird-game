@@ -13,7 +13,7 @@ game.BirdEntity = me.Entity.extend({
         this.renderable.addAnimation("flying", [0, 1, 2]);
         this.renderable.addAnimation("idle", [0]);
         this.renderable.setCurrentAnimation("flying");
-        //this.renderable.anchorPoint = new me.Vector2d(0.1, 0.5);
+        this.renderable.anchorPoint = new me.Vector2d(0.1, 0.5);
         this.body.removeShapeAt(0);
         this.body.addShape(new me.Ellipse(5, 5, 71, 51));
 
@@ -36,12 +36,13 @@ game.BirdEntity = me.Entity.extend({
 
     update: function(dt) {
         var that = this;
-        this.pos.x = 60;
+        this.pos.x = 100;
         if (!game.data.start) {
             return this._super(me.Entity, 'update', [dt]);
         }
         this.renderable.currentTransform.identity();
         if (me.input.isKeyPressed('fly')) {
+            // console.log('bird clicked')
             me.audio.play('wing');
             this.gravityForce = 0.2;
             var currentPos = this.pos.y;
@@ -70,7 +71,6 @@ game.BirdEntity = me.Entity.extend({
         me.Rect.prototype.updateBounds.apply(this);
 
         if(game.data.life <= 0){
-            // console.log('end game')
             game.data.start = false;
             me.audio.play("lose");
             this.endAnimation();
@@ -98,17 +98,6 @@ game.BirdEntity = me.Entity.extend({
             };
             
             sendPatchRequest();
-
-            // axios.patch('http://127.0.0.1:8000/api/players/1', 
-            // {
-            //     score: game.data.steps,
-            //     life: game.data.life,
-            //     top_score: me.save.topSteps,
-            //     // top_score: game.data.top_score
-            // }
-            // ).then(function (response) {
-            //     console.log(response.data);
-            // });
 
             game.data.start = false;
             me.audio.play("lose");
@@ -174,6 +163,57 @@ game.BirdEntity = me.Entity.extend({
             });
         this.endTween.start();
     }
+
+});
+
+game.CharacterEntity = me.Entity.extend({
+    init: function(x, y) {
+        var settings = {};
+        // settings.image = 'character';
+        settings.image = 'character_front';
+        // settings.width = 85;
+        settings.width = 87;
+        // settings.height = 120;
+        settings.height = 270;  
+        
+        this._super(me.Entity, 'init', [x, y, settings]);
+        this.alwaysUpdate = true;
+        this.body.gravity = 0.2;
+        this.maxAngleRotation = Number.prototype.degToRad(-30);
+        this.maxAngleRotationDown = Number.prototype.degToRad(35);
+        this.renderable.addAnimation("flying", [0, 1, 2]);
+        this.renderable.addAnimation("idle", [0]);
+        this.renderable.setCurrentAnimation("flying");
+        this.renderable.anchorPoint = new me.Vector2d(0.1, 0.5);
+        this.body.removeShapeAt(0);
+        this.body.addShape(new me.Ellipse(5, 5, 71, 51));
+
+        this.collided = false;
+    },
+
+    update: function(dt) {
+        var that = this;
+        this.pos.x = 10;
+        // this.pos.x = 40;
+        if (!game.data.start) {
+            return this._super(me.Entity, 'update', [dt]);
+        }
+        this.renderable.currentTransform.identity();
+        // console.log(count_++);
+        if (me.input.isKeyPressed('fly')) {
+            console.log("character clicked");
+            // var settings = {};
+            this.settings.image = 'character_side1';
+            // that.settings.width = 85;
+            this.settings.width = 87;
+            // that.settings.height = 120;
+            this.settings.height = 270;
+        }
+        // me.settings.image = 'character_side1'
+        // me.settings.width = 87;
+        // me.settings.height = 270;
+        return true;
+    },
 
 });
 

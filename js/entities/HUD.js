@@ -39,8 +39,6 @@ game.HUD.ScoreItem = me.Renderable.extend({
     draw: function (renderer) {
         if (game.data.start && me.state.isCurrent(me.state.PLAY)) {
             
-            // TODO: data to be fetched from backend
-
             this.font.draw(renderer, 'Life: ' + game.data.life.toString(), me.game.viewport.width/2 - 200, 10);
             this.font.draw(renderer, 'Score: ' + game.data.steps.toString(), me.game.viewport.width/2 + 50, 10);
             // this.font.draw(renderer, 'Score: ' + game.data.score.toString(), me.game.viewport.width/2 + 50, 10);
@@ -75,6 +73,17 @@ var BackgroundLayer = me.ImageLayer.extend({
                 me.audio.enable();
             }
         }
+
+        // if(me.input.isKeyPressed('fly')) {
+        //     var settings = {};
+        //     settings.name = 'bg0';
+        //     settings.width = 900;
+        //     settings.height = 600;
+        //     settings.image = image;
+        //     settings.z = z;
+        //     settings.ratio = 1;
+        // }
+
         return true;
     }
 });
