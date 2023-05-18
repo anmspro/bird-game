@@ -54,22 +54,7 @@ var game = {
         
         sendGetRequest();
 
-        // axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
-        //     game.data.life = response.data.life;
-        //     game.data.total_score = response.data.total_score;
-        //     game.data.top_score = response.data.top_score;
-        //     me.save.topSteps = response.data.top_score;
-        // });
-
-        // if(game.data.life <= 0){
-        //     game.data.start = false;
-        //     me.audio.play("lose");
-        //     this.endAnimation();
-        //     return false;
-        // }
-
         if (!me.video.init(900, 600, {
-        // if (!me.video.init(600, 900, {
             wrapper: "screen",
             scale : "auto",
             scaleMethod: "fit"
@@ -149,7 +134,8 @@ game.BirdEntity = me.Entity.extend({
         if (me.input.isKeyPressed('fly')) {
             // console.log('bird clicked')
             me.audio.play('wing');
-            this.gravityForce = 0.2;
+            // this.gravityForce = 0.2;
+            this.gravityForce += 0.2;
             var currentPos = this.pos.y;
 
             this.angleTween.stop();
@@ -162,7 +148,6 @@ game.BirdEntity = me.Entity.extend({
                 that.renderable.currentTransform.rotate(that.maxAngleRotation);
             })
             this.angleTween.start();
-
         } else {
             this.gravityForce += 0.2;
             this.pos.y += me.timer.tick * this.gravityForce;
