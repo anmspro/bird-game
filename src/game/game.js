@@ -17,6 +17,7 @@ var game = {
         // {name: "clumsy", type:"image", src: "./../../data/img/clumsy.png"},
         {name: "clumsy", type:"image", src: "./../../data/img/football1_transparent.png"},
         {name: "character", type:"image", src: "./../../data/img/character_transparent.png"},
+        {name: "character_big", type:"image", src: "./../../data/img/character_transparent_big.png"},
         {name: "character_front", type:"image", src: "./../../data/img/front_small.png"},
         {name: "character_side1", type:"image", src: "./../../data/img/side1_small.png"},
         {name: "character_side2", type:"image", src: "./../../data/img/side2_small.png"},
@@ -78,6 +79,9 @@ var game = {
 
         me.pool.register("clumsy", game.BirdEntity);
         me.pool.register("character", game.CharacterEntity);
+        me.pool.register("character_front", game.CharacterFrontEntity);
+        me.pool.register("character_side1", game.CharacterSide1Entity);
+        me.pool.register("character_side2", game.CharacterSide2Entity);
         me.pool.register("pipe", game.PipeEntity, true);
         me.pool.register("hit", game.HitEntity, true);
         me.pool.register("ground", game.Ground, true);
@@ -85,6 +89,8 @@ var game = {
         me.state.change(me.state.MENU);
     }
 };
+
+var switchCharacter = 0;
 
 game.BirdEntity = me.Entity.extend({
     init: function(x, y) {
@@ -132,10 +138,9 @@ game.BirdEntity = me.Entity.extend({
         this.renderable.currentTransform.identity();
         
         if (me.input.isKeyPressed('fly')) {
-            // console.log('bird clicked')
+            switchCharacter = 1;
             me.audio.play('wing');
-            // this.gravityForce = 0.2;
-            this.gravityForce += 0.2;
+            this.gravityForce = 0.2;
             var currentPos = this.pos.y;
 
             this.angleTween.stop();
@@ -157,6 +162,7 @@ game.BirdEntity = me.Entity.extend({
                 this.currentAngle = this.maxAngleRotationDown;
             }
         }
+        
         this.renderable.currentTransform.rotate(this.currentAngle);
         me.Rect.prototype.updateBounds.apply(this);
 
@@ -180,7 +186,6 @@ game.BirdEntity = me.Entity.extend({
                         top_score: me.save.topSteps,
                         // top_score: game.data.top_score
                     });
-                    // console.log(response.data);
 
                 } catch (err) {
                     console.error(err);
@@ -260,10 +265,13 @@ game.CharacterEntity = me.Entity.extend({
     init: function(x, y) {
         var settings = {};
         // settings.image = 'character';
+        // settings.image = 'character_big';
         settings.image = 'character_front';
         // settings.width = 85;
+        // settings.width = 191;
         settings.width = 87;
         // settings.height = 120;
+        // settings.height = 270;
         settings.height = 270;  
         
         this._super(me.Entity, 'init', [x, y, settings]);
@@ -278,30 +286,185 @@ game.CharacterEntity = me.Entity.extend({
         this.body.removeShapeAt(0);
         this.body.addShape(new me.Ellipse(5, 5, 71, 51));
 
+        // this.collided = false;
+
+        // added from birdEntity
+
+        // a tween object for the flying physic effect
+        this.flyTween = new me.Tween(this.pos);
+        this.flyTween.easing(me.Tween.Easing.Exponential.InOut);
+
+        this.currentAngle = 0;
+        this.angleTween = new me.Tween(this);
+        this.angleTween.easing(me.Tween.Easing.Exponential.InOut);
+
+        // end animation tween
+        this.endTween = null;
+
+        // collision shape
         this.collided = false;
+
+        this.gravityForce = 0.2;
     },
 
     update: function(dt) {
         var that = this;
         this.pos.x = 10;
-        // this.pos.x = 40;
+        // this.pos.x = -30;
         if (!game.data.start) {
             return this._super(me.Entity, 'update', [dt]);
         }
+
         this.renderable.currentTransform.identity();
-        // console.log(count_++);
-        if (me.input.isKeyPressed('fly')) {
-            console.log("character clicked");
+        if(switchCharacter == 1) {
+            // console.log("entered character entity");
+            
             // var settings = {};
-            this.settings.image = 'character_side1';
-            // that.settings.width = 85;
-            this.settings.width = 87;
-            // that.settings.height = 120;
-            this.settings.height = 270;
+            // settings.image = 'character_side1';
+            // settings.width = 87;
+            // settings.height = 270;
+            // this._super(me.Entity, 'init', [10, me.game.viewport.height/2 + 100, settings]);
+            this.character = null;
+            // me.game.world.removeChild("character");
+            // me.game.world.removeChild(this.character);
+            this.character = me.pool.pull("character", 120, me.game.viewport.height/2 + 100);
+            this.character_side1 = me.pool.pull("character_side1", 120, me.game.viewport.height/2 + 100);
+            console.log(this);
+            me.game.world.removeChild(this);
+            me.game.world.addChild(this.character_side1, 11);
+
+            // this.character = me.pool.pull("character_side2", 10, me.game.viewport.height/2 + 100);
+
+            switchCharacter = 0;
         }
-        // me.settings.image = 'character_side1'
-        // me.settings.width = 87;
-        // me.settings.height = 270;
+
+        if (me.input.isKeyPressed('fly')) {
+            me.audio.play('wing');
+            this.gravityForce = 0.2;
+            var currentPos = this.pos.y;
+
+            this.angleTween.stop();
+            this.flyTween.stop();
+
+            this.flyTween.to({y: currentPos - 72}, 50);
+            this.flyTween.start();
+
+            this.angleTween.to({currentAngle: that.maxAngleRotation}, 50).onComplete(function(angle) {
+                that.renderable.currentTransform.rotate(that.maxAngleRotation);
+            })
+            this.angleTween.start();
+        } else {
+            // this.gravityForce += 0.2;
+            // this.pos.y += me.timer.tick * this.gravityForce;
+            // this.currentAngle += Number.prototype.degToRad(3);
+            // if (this.currentAngle >= this.maxAngleRotationDown) {
+            //     this.renderable.currentTransform.identity();
+            //     this.currentAngle = this.maxAngleRotationDown;
+            // }
+        }
+
+        this.renderable.currentTransform.rotate(this.currentAngle);
+        me.Rect.prototype.updateBounds.apply(this);
+
+        return true;
+    },
+
+});
+
+game.CharacterSide1Entity = me.Entity.extend({
+    init: function(x, y) {
+        var settings = {};
+        settings.image = 'character_side1';
+        settings.width = 87;
+        settings.height = 270;  
+        
+        this._super(me.Entity, 'init', [x, y, settings]);
+        this.alwaysUpdate = true;
+        this.body.gravity = 0.2;
+        this.maxAngleRotation = Number.prototype.degToRad(-30);
+        this.maxAngleRotationDown = Number.prototype.degToRad(35);
+        this.renderable.addAnimation("flying", [0, 1, 2]);
+        this.renderable.addAnimation("idle", [0]);
+        this.renderable.setCurrentAnimation("flying");
+        this.renderable.anchorPoint = new me.Vector2d(0.1, 0.5);
+        this.body.removeShapeAt(0);
+        this.body.addShape(new me.Ellipse(5, 5, 71, 51));
+
+        // this.collided = false;
+
+        // added from birdEntity
+
+        // a tween object for the flying physic effect
+        this.flyTween = new me.Tween(this.pos);
+        this.flyTween.easing(me.Tween.Easing.Exponential.InOut);
+
+        this.currentAngle = 0;
+        this.angleTween = new me.Tween(this);
+        this.angleTween.easing(me.Tween.Easing.Exponential.InOut);
+
+        // end animation tween
+        this.endTween = null;
+
+        // collision shape
+        this.collided = false;
+
+        this.gravityForce = 0.2;
+    },
+
+    update: function(dt) {
+        var that = this;
+        this.pos.x = 10;
+        // this.pos.x = -30;
+        if (!game.data.start) {
+            return this._super(me.Entity, 'update', [dt]);
+        }
+
+        this.renderable.currentTransform.identity();
+        if(switchCharacter == 1) {
+            console.log("entered character_side1 entity");
+            
+            var settings = {};
+            settings.image = 'character_side1';
+            settings.width = 87;
+            settings.height = 270;
+            // this.character = null;
+            // this._super(me.Entity, 'init', [10, me.game.viewport.height/2 + 100, settings]);
+            // this.character = me.pool.pull("character_side1", 120, me.game.viewport.height/2 + 100);
+            // me.game.world.addChild(this.character, 11);
+
+            // this.character = me.pool.pull("character_side2", 10, me.game.viewport.height/2 + 100);
+
+            switchCharacter = 0;
+        }
+
+        if (me.input.isKeyPressed('fly')) {
+            me.audio.play('wing');
+            this.gravityForce = 0.2;
+            var currentPos = this.pos.y;
+
+            this.angleTween.stop();
+            this.flyTween.stop();
+
+            this.flyTween.to({y: currentPos - 72}, 50);
+            this.flyTween.start();
+
+            this.angleTween.to({currentAngle: that.maxAngleRotation}, 50).onComplete(function(angle) {
+                that.renderable.currentTransform.rotate(that.maxAngleRotation);
+            })
+            this.angleTween.start();
+        } else {
+            // this.gravityForce += 0.2;
+            // this.pos.y += me.timer.tick * this.gravityForce;
+            // this.currentAngle += Number.prototype.degToRad(3);
+            // if (this.currentAngle >= this.maxAngleRotationDown) {
+            //     this.renderable.currentTransform.identity();
+            //     this.currentAngle = this.maxAngleRotationDown;
+            // }
+        }
+
+        this.renderable.currentTransform.rotate(this.currentAngle);
+        me.Rect.prototype.updateBounds.apply(this);
+
         return true;
     },
 
@@ -655,8 +818,22 @@ game.PlayScreen = me.ScreenObject.extend({
         this.bird = me.pool.pull("clumsy", 60, me.game.viewport.height/2 - 100);
         me.game.world.addChild(this.bird, 10);
         
-        this.character = me.pool.pull("character", 120, me.game.viewport.height/2 + 100);
-        me.game.world.addChild(this.character, 11);
+        console.log("PlayScreen onReset Function");
+
+        if(switchCharacter == 0) {
+            console.log("switch = 0")
+            this.character = me.pool.pull("character", 120, me.game.viewport.height/2 + 100);
+            // me.game.world.removeChild(this.character_side1);
+            me.game.world.addChild(this.character, 11);
+        }
+
+        if(switchCharacter == 1) {
+            console.log("switch = 0");
+            this.character_side1 = me.pool.pull("character_side1", 120, me.game.viewport.height/2 + 100);
+            // this.character = me.pool.pull("character_side1", 120, me.game.viewport.height/2 + 100);
+            me.game.world.addChild(this.character_side1, 11);
+            // me.game.world.addChild(this.character, 11);
+        }
 
         //inputs
         me.input.bindPointer(me.input.pointer.LEFT, me.input.KEY.SPACE);
@@ -688,6 +865,7 @@ game.PlayScreen = me.ScreenObject.extend({
         this.ground2 = null;
         me.input.unbindKey(me.input.KEY.SPACE);
         me.input.unbindPointer(me.input.pointer.LEFT);
+        console.log("PlayScreen onDestroy");
     }
 });
 
@@ -712,15 +890,6 @@ game.GameOverScreen = me.ScreenObject.extend({
             me.save.topSteps = game.data.steps;
             game.data.newHiScore = true;
         }
-
-        // axios.patch('http://127.0.0.1:8000/api/players/1', 
-        // {
-        //     top_score: me.save.topSteps,
-        //     life: game.data.life
-        // }
-        // ).then(function (response) {
-        //     console.log(response.data);
-        // });
 
         const sendPatchRequest = async () => {
             try {
@@ -788,17 +957,10 @@ game.GameOverScreen = me.ScreenObject.extend({
                     [0, 0, me.game.viewport.width/2, me.game.viewport.height/2]
                 );
                 this.font = new me.Font('gamefont', 40, 'black', 'left');
-                
-                // axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
-                //     game.data.score = response.data.score;
-                //     // me.save.topSteps = response.data.top_score;
-                //     game.data.life = response.data.life;
-                // });
 
                 const sendGetRequest = async () => {
                     try {
                         const response = await axios.get('http://127.0.0.1:8000/api/players/1');
-                        // console.log(response.data);
                         game.data.score = response.data.score;
                         game.data.life = response.data.life;
                     } catch (err) {
@@ -926,17 +1088,10 @@ game.GameEnd = me.ScreenObject.extend({
                     [0, 0, me.game.viewport.width/2, me.game.viewport.height/2]
                 );
                 this.font = new me.Font('gamefont', 40, 'black', 'left');
-                
-                // axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
-                //     game.data.score = response.data.score;
-                //     // me.save.topSteps = response.data.top_score;
-                //     game.data.life = response.data.life;
-                // });
 
                 const sendGetRequest = async () => {
                     try {
                         const response = await axios.get('http://127.0.0.1:8000/api/players/1');
-                        // console.log(response.data);
                         game.data.score = response.data.score;
                         game.data.life = response.data.life;
                     } catch (err) {
