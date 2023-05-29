@@ -27,6 +27,9 @@ body {
     height: 100%;
     width: 100%;
 
+    /* height: 100% !important;
+    width: 100% !important; */
+
     margin: auto;
 
     display: block;
@@ -45,6 +48,7 @@ body {
     -ms-interpolation-mode: nearest-neighbor;
 }
 
+/* 
 #screenTest canvas {
 
     height: 100% !important;
@@ -61,7 +65,7 @@ body {
 #screen-canvas {
     width: 100%;
     height: 100%;
-}
+} */
 
 #share {
     margin: 10px auto;
@@ -103,5 +107,13 @@ body {
         left: 0;
         bottom: 0;
         right: 0;
+    }
+
+    #screen canvas {
+        /* height: 100% !important;
+        width: 67% !important; */
+
+        height: 100vw !important;
+        width: calc(100vw * 3 / 2) !important;
     }
 }
