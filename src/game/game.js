@@ -58,7 +58,9 @@ var game = {
         if (!me.video.init(900, 600, {
             wrapper: "screen",
             scale : "auto",
-            scaleMethod: "fit"
+            scaleMethod: "fit",
+            // width: "100%",
+            // height: "100%",
         })) {
             alert("Your browser does not support HTML5 canvas.");
             return;

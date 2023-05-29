@@ -40,6 +40,12 @@ var game = {
 
     "onload": function() {
 
+        var parentDiv = document.getElementById("screen");
+            var canvas = parentDiv.querySelector("canvas");
+
+            canvas.style.width = "100%";
+            canvas.style.height = "100%";
+
         const sendGetRequest = async () => {
             try {
                 const response = await axios.get('http://127.0.0.1:8000/api/players/1');
@@ -57,7 +63,9 @@ var game = {
         if (!me.video.init(900, 600, {
             wrapper: "screen",
             scale : "auto",
-            scaleMethod: "fit"
+            scaleMethod: "fit",
+            width: "100%",
+            height: "100%",
         })) {
             alert("Your browser does not support HTML5 canvas.");
             return;
