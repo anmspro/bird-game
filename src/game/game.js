@@ -570,6 +570,7 @@ game.RobiPackGenerator = me.Renderable.extend({
         this._super(me.Renderable, 'init', [0, me.game.viewport.width, me.game.viewport.height, 92]);
         this.alwaysUpdate = true;
         this.generate = 0;
+        // this.robiPackFrequency = 92*Number.prototype.random(1, 4);
         this.robiPackFrequency = 92;
         this.robiPackHoleSize = 1240;
         this.posX = me.game.viewport.width + 250;
@@ -577,8 +578,8 @@ game.RobiPackGenerator = me.Renderable.extend({
 
     update: function(dt) {
         if(this.generate++ % this.robiPackFrequency == 0) {
-            // var posY = Number.prototype.random(me.video.renderer.getHeight() - 100, 200);
-            var posY = Number.prototype.random(me.video.renderer.getHeight() - 100, 100);
+            var posY = Number.prototype.random(me.video.renderer.getHeight() - 200, 50);
+            console.log(posY);
             var posY2 = posY - me.game.viewport.height - this.robiPackHoleSize;
             var robi_pack1 = new me.pool.pull('robi_pack', this.posX, posY);
             // var robi_pack2 = new me.pool.pull('robi_pack', this.posX, posY2);
