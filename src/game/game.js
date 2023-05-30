@@ -906,6 +906,7 @@ game.PlayScreen = me.ScreenObject.extend({
             .onComplete(function() {
                 game.data.start = true;
                 me.game.world.addChild(new game.PipeGenerator(), 0);
+                me.game.world.addChild(new game.RobiPackGenerator(), 0);
                 me.game.world.removeChild(that.getReady);
             }).start();
     },
