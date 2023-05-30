@@ -17,10 +17,12 @@ var game = {
         // {name: "clumsy", type:"image", src: "./../../data/img/clumsy.png"},
         {name: "clumsy", type:"image", src: "./../../data/img/football1_transparent.png"},
         {name: "character", type:"image", src: "./../../data/img/character_transparent.png"},
+        {name: "character_big", type:"image", src: "./../../data/img/character_transparent_big.png"},
         {name: "character_front", type:"image", src: "./../../data/img/front_small.png"},
         {name: "character_side1", type:"image", src: "./../../data/img/side1_small.png"},
         {name: "character_side2", type:"image", src: "./../../data/img/side2_small.png"},
         {name: "pipe", type:"image", src: "./../../data/img/pipe.png"},
+        {name: "robi_pack", type:"image", src: "./../../data/img/robi_pack.png"},
         {name: "logo", type:"image", src: "./../../data/img/logo.png"},
         {name: "ground", type:"image", src: "./../../data/img/ground.png"},
         {name: "gameover", type:"image", src: "./../../data/img/gameover.png"},
@@ -40,12 +42,6 @@ var game = {
 
     "onload": function() {
 
-        var parentDiv = document.getElementById("screen");
-            var canvas = parentDiv.querySelector("canvas");
-
-            canvas.style.width = "100%";
-            canvas.style.height = "100%";
-
         const sendGetRequest = async () => {
             try {
                 const response = await axios.get('http://127.0.0.1:8000/api/players/1');
@@ -64,8 +60,8 @@ var game = {
             wrapper: "screen",
             scale : "auto",
             scaleMethod: "fit",
-            width: "100%",
-            height: "100%",
+            // width: "100%",
+            // height: "100%",
         })) {
             alert("Your browser does not support HTML5 canvas.");
             return;
@@ -86,7 +82,11 @@ var game = {
 
         me.pool.register("clumsy", game.BirdEntity);
         me.pool.register("character", game.CharacterEntity);
+        me.pool.register("character_front", game.CharacterFrontEntity);
+        me.pool.register("character_side1", game.CharacterSide1Entity);
+        me.pool.register("character_side2", game.CharacterSide2Entity);
         me.pool.register("pipe", game.PipeEntity, true);
+        me.pool.register("robi_pack", game.RobiPackEntity, true);
         me.pool.register("hit", game.HitEntity, true);
         me.pool.register("ground", game.Ground, true);
 

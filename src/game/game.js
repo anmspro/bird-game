@@ -22,7 +22,7 @@ var game = {
         {name: "character_side1", type:"image", src: "./../../data/img/side1_small.png"},
         {name: "character_side2", type:"image", src: "./../../data/img/side2_small.png"},
         {name: "pipe", type:"image", src: "./../../data/img/pipe.png"},
-        {name: "robi_pack", type:"image", src: "./../../data/img/myrobi.png"},
+        {name: "robi_pack", type:"image", src: "./../../data/img/robi_pack.png"},
         {name: "logo", type:"image", src: "./../../data/img/logo.png"},
         {name: "ground", type:"image", src: "./../../data/img/ground.png"},
         {name: "gameover", type:"image", src: "./../../data/img/gameover.png"},
@@ -539,10 +539,10 @@ game.RobiPackEntity = me.Entity.extend({
     init: function(x, y) {
         var settings = {};
         settings.image = this.image = me.loader.getImage('robi_pack');
-        settings.width = 100;
-        settings.height = 100;
-        settings.framewidth = 100;
-        settings.frameheight = 100;
+        settings.width = 50;
+        settings.height = 72;
+        settings.framewidth = 50;
+        settings.frameheight = 72;
 
         this._super(me.Entity, 'init', [x, y, settings]);
         this.alwaysUpdate = true;
@@ -562,7 +562,7 @@ game.RobiPackEntity = me.Entity.extend({
         me.Rect.prototype.updateBounds.apply(this);
         this._super(me.Entity, 'update', [dt]);
         return true;
-    }
+    },
 })
 
 game.RobiPackGenerator = me.Renderable.extend({
@@ -571,21 +571,26 @@ game.RobiPackGenerator = me.Renderable.extend({
         this.alwaysUpdate = true;
         this.generate = 0;
         this.robiPackFrequency = 92;
-        // this.robiPackHoleSize = 1240;
-        this.posx = me.game.viewport.width;
+        this.robiPackHoleSize = 1240;
+        this.posX = me.game.viewport.width + 250;
     },
 
     update: function(dt) {
         if(this.generate++ % this.robiPackFrequency == 0) {
-            var posY = Number.prototype.random(me.video.renderer.getHeight() - 100, 200);
-            // var posY2 = posY - me.game.viewport.height - this.robiPackHoleSize;
-            var robi_pack = new me.pool.pull('robi_pack', this.posX, posY);
-            var hitPos = posY - 100;
-            var hit = new me.pool.pull("hit", this.posX, hitpos);
-            robi_pack.renderable.currentTransform.scaleY(-1);
-            me.game.world.addChild(robi_pack, 10);
+            // var posY = Number.prototype.random(me.video.renderer.getHeight() - 100, 200);
+            var posY = Number.prototype.random(me.video.renderer.getHeight() - 100, 100);
+            var posY2 = posY - me.game.viewport.height - this.robiPackHoleSize;
+            var robi_pack1 = new me.pool.pull('robi_pack', this.posX, posY);
+            // var robi_pack2 = new me.pool.pull('robi_pack', this.posX, posY2);
+            var hitPos = posY - 100;    
+            var hit = new me.pool.pull("hit", this.posX, hitPos);
+            robi_pack1.renderable.currentTransform.scaleY(-1);
+            me.game.world.addChild(robi_pack1, 10);
+            // me.game.world.addChild(robi_pack2, 10);
+            me.game.world.addChild(hit, 11);
         }
-    }
+        this._super(me.Entity, "update", [dt]);
+    },
 })
 
 game.HitEntity = me.Entity.extend({
@@ -872,8 +877,6 @@ game.PlayScreen = me.ScreenObject.extend({
 
         this.bird = me.pool.pull("clumsy", 60, me.game.viewport.height/2 - 100);
         me.game.world.addChild(this.bird, 10);
-        
-        console.log("PlayScreen onReset Function");
 
         if(switchCharacter == 0) {
             console.log("switch = 0")
@@ -883,7 +886,6 @@ game.PlayScreen = me.ScreenObject.extend({
         }
 
         if(switchCharacter == 1) {
-            console.log("switch = 0");
             this.character_side1 = me.pool.pull("character_side1", 120, me.game.viewport.height/2 + 100);
             // this.character = me.pool.pull("character_side1", 120, me.game.viewport.height/2 + 100);
             me.game.world.addChild(this.character_side1, 11);
