@@ -22,6 +22,7 @@ var game = {
         {name: "character_side1", type:"image", src: "./../../data/img/side1_small.png"},
         {name: "character_side2", type:"image", src: "./../../data/img/side2_small.png"},
         {name: "pipe", type:"image", src: "./../../data/img/pipe.png"},
+        {name: "robi_pack", type:"image", src: "./../../data/img/myrobi.png"},
         {name: "logo", type:"image", src: "./../../data/img/logo.png"},
         {name: "ground", type:"image", src: "./../../data/img/ground.png"},
         {name: "gameover", type:"image", src: "./../../data/img/gameover.png"},
@@ -85,6 +86,7 @@ var game = {
         me.pool.register("character_side1", game.CharacterSide1Entity);
         me.pool.register("character_side2", game.CharacterSide2Entity);
         me.pool.register("pipe", game.PipeEntity, true);
+        me.pool.register("robi_pack", game.RobiPackEntity, true);
         me.pool.register("hit", game.HitEntity, true);
         me.pool.register("ground", game.Ground, true);
 
@@ -327,13 +329,11 @@ game.CharacterEntity = me.Entity.extend({
             // settings.height = 270;
             // this._super(me.Entity, 'init', [10, me.game.viewport.height/2 + 100, settings]);
             this.character = null;
-            // me.game.world.removeChild("character");
-            // me.game.world.removeChild(this.character);
             this.character = me.pool.pull("character", 120, me.game.viewport.height/2 + 100);
             this.character_side1 = me.pool.pull("character_side1", 120, me.game.viewport.height/2 + 100);
-            console.log(this);
-            me.game.world.removeChild(this);
-            me.game.world.addChild(this.character_side1, 11);
+            // console.log(this);
+            // me.game.world.removeChild(this);
+            // me.game.world.addChild(this.character_side1, 11);
 
             // this.character = me.pool.pull("character_side2", 10, me.game.viewport.height/2 + 100);
 
@@ -534,6 +534,59 @@ game.PipeGenerator = me.Renderable.extend({
     },
 
 });
+
+game.RobiPackEntity = me.Entity.extend({
+    init: function(x, y) {
+        var settings = {};
+        settings.image = this.image = me.loader.getImage('robi_pack');
+        settings.width = 100;
+        settings.height = 100;
+        settings.framewidth = 100;
+        settings.frameheight = 100;
+
+        this._super(me.Entity, 'init', [x, y, settings]);
+        this.alwaysUpdate = true;
+        this.body.gravity = 0;
+        this.body.vel.set(-5, 0);
+        this.type = 'robi_pack';
+    },
+
+    update: function(dt) {
+        if(!game.data.start) {
+            return this._super(me.Entity, 'update', [dt]);
+        }
+        this.pos.add(this.body.vel);
+        if(this.pos.x < -this.image.width) {
+            me.game.world.removeChild(this);
+        }
+        me.Rect.prototype.updateBounds.apply(this);
+        this._super(me.Entity, 'update', [dt]);
+        return true;
+    }
+})
+
+game.RobiPackGenerator = me.Renderable.extend({
+    init: function() {
+        this._super(me.Renderable, 'init', [0, me.game.viewport.width, me.game.viewport.height, 92]);
+        this.alwaysUpdate = true;
+        this.generate = 0;
+        this.robiPackFrequency = 92;
+        // this.robiPackHoleSize = 1240;
+        this.posx = me.game.viewport.width;
+    },
+
+    update: function(dt) {
+        if(this.generate++ % this.robiPackFrequency == 0) {
+            var posY = Number.prototype.random(me.video.renderer.getHeight() - 100, 200);
+            // var posY2 = posY - me.game.viewport.height - this.robiPackHoleSize;
+            var robi_pack = new me.pool.pull('robi_pack', this.posX, posY);
+            var hitPos = posY - 100;
+            var hit = new me.pool.pull("hit", this.posX, hitpos);
+            robi_pack.renderable.currentTransform.scaleY(-1);
+            me.game.world.addChild(robi_pack, 10);
+        }
+    }
+})
 
 game.HitEntity = me.Entity.extend({
     init: function(x, y) {
