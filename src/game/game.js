@@ -60,8 +60,6 @@ var game = {
             wrapper: "screen",
             scale : "auto",
             scaleMethod: "fit",
-            // width: "100%",
-            // height: "100%",
         })) {
             alert("Your browser does not support HTML5 canvas.");
             return;
@@ -75,6 +73,10 @@ var game = {
         me.state.set(me.state.PLAY, new game.PlayScreen());
         me.state.set(me.state.GAME_END, new game.GameEnd());
         me.state.set(me.state.GAME_OVER, new game.GameOverScreen());
+        // me.state.set(me.state.PAUSE, new game.PauseScreen());
+
+        // me.state.add(me.state.PLAY, new PlayState());
+        // me.state.add(me.state.PAUSE, new PauseState());
 
         me.input.bindKey(me.input.KEY.SPACE, "fly", true);
         me.input.bindKey(me.input.KEY.M, "mute", true);
@@ -157,7 +159,8 @@ game.BirdEntity = me.Entity.extend({
                 that.renderable.currentTransform.rotate(that.maxAngleRotation);
             })
             this.angleTween.start();
-        } else {
+        }
+        else {
             this.gravityForce += 0.2;
             this.pos.y += me.timer.tick * this.gravityForce;
             this.currentAngle += Number.prototype.degToRad(3);
@@ -218,6 +221,7 @@ game.BirdEntity = me.Entity.extend({
         }
         // remove the hit box
         if (obj.type === 'hit') {
+            me.state.pause();
             me.game.world.removeChildNow(obj);
             game.data.steps++;
             game.data.score++;
@@ -321,8 +325,6 @@ game.CharacterEntity = me.Entity.extend({
 
         this.renderable.currentTransform.identity();
         if(switchCharacter == 1) {
-            // console.log("entered character entity");
-            
             // var settings = {};
             // settings.image = 'character_side1';
             // settings.width = 87;
@@ -331,7 +333,7 @@ game.CharacterEntity = me.Entity.extend({
             this.character = null;
             this.character = me.pool.pull("character", 120, me.game.viewport.height/2 + 100);
             this.character_side1 = me.pool.pull("character_side1", 120, me.game.viewport.height/2 + 100);
-            // console.log(this);
+            
             // me.game.world.removeChild(this);
             // me.game.world.addChild(this.character_side1, 11);
 
@@ -423,7 +425,6 @@ game.CharacterSide1Entity = me.Entity.extend({
 
         this.renderable.currentTransform.identity();
         if(switchCharacter == 1) {
-            console.log("entered character_side1 entity");
             
             var settings = {};
             settings.image = 'character_side1';
@@ -516,10 +517,7 @@ game.PipeGenerator = me.Renderable.extend({
 
     update: function(dt) {
         if (this.generate++ % this.pipeFrequency == 0) {
-            var posY = Number.prototype.random(
-                    me.video.renderer.getHeight() - 100,
-                    200
-            );
+            var posY = Number.prototype.random(me.video.renderer.getHeight() - 100, 200);
             var posY2 = posY - me.game.viewport.height - this.pipeHoleSize;
             var pipe1 = new me.pool.pull('pipe', this.posX, posY);
             var pipe2 = new me.pool.pull('pipe', this.posX, posY2);
@@ -579,14 +577,13 @@ game.RobiPackGenerator = me.Renderable.extend({
     update: function(dt) {
         if(this.generate++ % this.robiPackFrequency == 0) {
             var posY = Number.prototype.random(me.video.renderer.getHeight() - 200, 50);
-            console.log(posY);
             var posY2 = posY - me.game.viewport.height - this.robiPackHoleSize;
-            var robi_pack1 = new me.pool.pull('robi_pack', this.posX, posY);
-            // var robi_pack2 = new me.pool.pull('robi_pack', this.posX, posY2);
-            var hitPos = posY - 100;    
+            var robi_pack = new me.pool.pull('robi_pack', this.posX, posY);
+            var hitPos = posY - 100;   
+            // console.log(hitPos); 
             var hit = new me.pool.pull("hit", this.posX, hitPos);
-            robi_pack1.renderable.currentTransform.scaleY(-1);
-            me.game.world.addChild(robi_pack1, 10);
+            robi_pack.renderable.currentTransform.scaleY(-1);
+            me.game.world.addChild(robi_pack, 10);
             // me.game.world.addChild(robi_pack2, 10);
             me.game.world.addChild(hit, 11);
         }
@@ -880,7 +877,6 @@ game.PlayScreen = me.ScreenObject.extend({
         me.game.world.addChild(this.bird, 10);
 
         if(switchCharacter == 0) {
-            console.log("switch = 0")
             this.character = me.pool.pull("character", 120, me.game.viewport.height/2 + 100);
             // me.game.world.removeChild(this.character_side1);
             me.game.world.addChild(this.character, 11);
@@ -924,7 +920,41 @@ game.PlayScreen = me.ScreenObject.extend({
         this.ground2 = null;
         me.input.unbindKey(me.input.KEY.SPACE);
         me.input.unbindPointer(me.input.pointer.LEFT);
-        console.log("PlayScreen onDestroy");
+    }
+});
+
+game.PauseScreen = me.ScreenObject.extend({
+    init: function() {
+        // me.audio.play("theme", true);
+        // lower audio volume on firefox browser
+        var vol = me.device.ua.indexOf("Firefox") !== -1 ? 0.3 : 0.5;
+        me.audio.setVolume(vol);
+        this._super(me.ScreenObject, 'init');
+    },
+
+    onResetEvent: function() {
+        me.game.reset();
+        me.audio.stop("theme");
+        if (!game.data.muted){
+            me.audio.play("theme", true);
+        }
+
+        me.input.bindKey(me.input.KEY.SPACE, "fly", true);
+
+        //inputs
+        me.input.bindPointer(me.input.pointer.LEFT, me.input.KEY.SPACE);
+    },
+
+    onDestroyEvent: function() {
+        me.audio.stopTrack('theme');
+        // free the stored instance
+        this.HUD = null;
+        this.bird = null;
+        this.character = null;
+        this.ground1 = null;
+        this.ground2 = null;
+        me.input.unbindKey(me.input.KEY.SPACE);
+        me.input.unbindPointer(me.input.pointer.LEFT);
     }
 });
 
@@ -957,7 +987,6 @@ game.GameOverScreen = me.ScreenObject.extend({
                     top_score: me.save.topSteps,
                     life: game.data.life
                 });
-                // console.log(response.data);
 
             } catch (err) {
                 console.error(err);
