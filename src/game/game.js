@@ -221,7 +221,7 @@ game.BirdEntity = me.Entity.extend({
         }
         // remove the hit box
         if (obj.type === 'hit') {
-            me.state.pause();
+            // me.state.pause();
             me.game.world.removeChildNow(obj);
             game.data.steps++;
             game.data.score++;
@@ -266,7 +266,6 @@ game.BirdEntity = me.Entity.extend({
             });
         this.endTween.start();
     }
-
 });
 
 game.CharacterEntity = me.Entity.extend({
@@ -845,6 +844,7 @@ game.PlayScreen = me.ScreenObject.extend({
             me.audio.play("theme", true);
         }
 
+        // me.input.bindKey(me.input.KEY.P, "pause");
         me.input.bindKey(me.input.KEY.SPACE, "fly", true);
 
         const sendGetRequest = async () => {
@@ -910,6 +910,12 @@ game.PlayScreen = me.ScreenObject.extend({
             }).start();
     },
 
+    // update: function(dt) {
+    //     if (me.input.isKeyPressed("pause")) {
+    //       me.state.change(me.state.PAUSE);
+    //     }
+    // },
+
     onDestroyEvent: function() {
         me.audio.stopTrack('theme');
         // free the stored instance
@@ -933,28 +939,18 @@ game.PauseScreen = me.ScreenObject.extend({
     },
 
     onResetEvent: function() {
-        me.game.reset();
-        me.audio.stop("theme");
-        if (!game.data.muted){
-            me.audio.play("theme", true);
-        }
+        // me.game.pause();
+        me.input.registerPointerEvent('pointerdown', me.game.viewport, this.onResume.bind(this));
+    },
 
-        me.input.bindKey(me.input.KEY.SPACE, "fly", true);
-
-        //inputs
-        me.input.bindPointer(me.input.pointer.LEFT, me.input.KEY.SPACE);
+    onResume: function() {
+        me.input.releasePointerEvent('pointerdown', me.game.viewport);
+        me.game.resume();
+        me.state.change(me.state.PLAY);
     },
 
     onDestroyEvent: function() {
-        me.audio.stopTrack('theme');
-        // free the stored instance
-        this.HUD = null;
-        this.bird = null;
-        this.character = null;
-        this.ground1 = null;
-        this.ground2 = null;
-        me.input.unbindKey(me.input.KEY.SPACE);
-        me.input.unbindPointer(me.input.pointer.LEFT);
+        
     }
 });
 
