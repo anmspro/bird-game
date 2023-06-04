@@ -1,9 +1,9 @@
-Creating a Clumsy Bird Customization
+Customization
 ====================================
 
 Sometimes play the regular version becomes very boring and you want
 to start building your own. Great news! With this repo you can have your own
-customization of Clumsy Bird to play with your friends.
+customization of the game to play with your friends.
 
 If you want to add your own assets to the game, this is the list of the assets used in this game. Just create or change the image
 below with your own customization. Remember to keep the names and sizes.
