@@ -1,5 +1,11 @@
 game.PlayScreen = me.ScreenObject.extend({
     init: function() {
+        this.paused = false; // Flag to track game pause state
+        this.pauseModalShown = false; // Flag to track whether the pause modal is shown
+
+        // Bind the pause key
+        me.input.bindKey(me.input.KEY.P, "pause");
+
         me.audio.play("theme", true);
         // lower audio volume on firefox browser
         var vol = me.device.ua.indexOf("Firefox") !== -1 ? 0.3 : 0.5;
@@ -7,7 +13,42 @@ game.PlayScreen = me.ScreenObject.extend({
         this._super(me.ScreenObject, 'init');
     },
 
+    update: function() {
+        if (me.input.isKeyPressed("pause") && !this.pauseModalShown) {
+            this.togglePause();
+        }
+
+        if (this.paused) {
+            return true;
+        }
+
+        return true;
+    },
+
+    togglePause: function() {
+        if (this.paused) {
+            this.resumeGame();
+        } else {
+            this.pauseGame();
+        }
+    },
+
+    pauseGame: function() {
+        this.paused = true;
+        this.pauseModalShown = true;
+
+        me.timer.pause();
+    },
+
+    resumeGame: function() {
+        this.paused = false;
+        this.pauseModalShown = false;
+
+        me.timer.resume();
+    },
+
     onResetEvent: function() {
+        // if(this.paused) return;
         me.game.reset();
         me.audio.stop("theme");
         if (!game.data.muted){
@@ -44,9 +85,19 @@ game.PlayScreen = me.ScreenObject.extend({
 
         this.bird = me.pool.pull("clumsy", 60, me.game.viewport.height/2 - 100);
         me.game.world.addChild(this.bird, 10);
-        
-        this.character = me.pool.pull("character", 120, me.game.viewport.height/2 + 100);
-        me.game.world.addChild(this.character, 11);
+
+        if(switchCharacter == 0) {
+            this.character = me.pool.pull("character", 120, me.game.viewport.height/2 + 100);
+            // me.game.world.removeChild(this.character_side1);
+            me.game.world.addChild(this.character, 11);
+        }
+
+        if(switchCharacter == 1) {
+            this.character_side1 = me.pool.pull("character_side1", 120, me.game.viewport.height/2 + 100);
+            // this.character = me.pool.pull("character_side1", 120, me.game.viewport.height/2 + 100);
+            me.game.world.addChild(this.character_side1, 11);
+            // me.game.world.addChild(this.character, 11);
+        }
 
         //inputs
         me.input.bindPointer(me.input.pointer.LEFT, me.input.KEY.SPACE);
@@ -64,6 +115,7 @@ game.PlayScreen = me.ScreenObject.extend({
             .onComplete(function() {
                 game.data.start = true;
                 me.game.world.addChild(new game.PipeGenerator(), 0);
+                me.game.world.addChild(new game.RobiPackGenerator(), 0);
                 me.game.world.removeChild(that.getReady);
             }).start();
     },
@@ -78,5 +130,8 @@ game.PlayScreen = me.ScreenObject.extend({
         this.ground2 = null;
         me.input.unbindKey(me.input.KEY.SPACE);
         me.input.unbindPointer(me.input.pointer.LEFT);
+
+        // Unbind the pause key
+        me.input.unbindKey(me.input.KEY.P);
     }
 });

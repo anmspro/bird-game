@@ -20,15 +20,6 @@ game.GameOverScreen = me.ScreenObject.extend({
             game.data.newHiScore = true;
         }
 
-        // axios.patch('http://127.0.0.1:8000/api/players/1', 
-        // {
-        //     top_score: me.save.topSteps,
-        //     life: game.data.life
-        // }
-        // ).then(function (response) {
-        //     console.log(response.data);
-        // });
-
         const sendPatchRequest = async () => {
             try {
                 const response = await axios.patch('http://127.0.0.1:8000/api/players/1', 
@@ -36,7 +27,6 @@ game.GameOverScreen = me.ScreenObject.extend({
                     top_score: me.save.topSteps,
                     life: game.data.life
                 });
-                // console.log(response.data);
 
             } catch (err) {
                 console.error(err);
@@ -95,17 +85,10 @@ game.GameOverScreen = me.ScreenObject.extend({
                     [0, 0, me.game.viewport.width/2, me.game.viewport.height/2]
                 );
                 this.font = new me.Font('gamefont', 40, 'black', 'left');
-                
-                // axios.get('http://127.0.0.1:8000/api/players/1').then(function (response) {
-                //     game.data.score = response.data.score;
-                //     // me.save.topSteps = response.data.top_score;
-                //     game.data.life = response.data.life;
-                // });
 
                 const sendGetRequest = async () => {
                     try {
                         const response = await axios.get('http://127.0.0.1:8000/api/players/1');
-                        // console.log(response.data);
                         game.data.score = response.data.score;
                         game.data.life = response.data.life;
                     } catch (err) {

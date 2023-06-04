@@ -59,7 +59,7 @@ var game = {
         if (!me.video.init(900, 600, {
             wrapper: "screen",
             scale : "auto",
-            scaleMethod: "fit"
+            scaleMethod: "fit",
         })) {
             alert("Your browser does not support HTML5 canvas.");
             return;
@@ -73,6 +73,11 @@ var game = {
         me.state.set(me.state.PLAY, new game.PlayScreen());
         me.state.set(me.state.GAME_END, new game.GameEnd());
         me.state.set(me.state.GAME_OVER, new game.GameOverScreen());
+        // me.state.set(me.state.GAME_PAUSE, new game.GamePause());
+        // me.state.set(me.state.GAME_PAUSE, new game.PauseScreen());
+
+        // me.state.add(me.state.PLAY, new PlayState());
+        // me.state.add(me.state.PAUSE, new PauseState());
 
         me.input.bindKey(me.input.KEY.SPACE, "fly", true);
         me.input.bindKey(me.input.KEY.M, "mute", true);
