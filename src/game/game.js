@@ -73,7 +73,8 @@ var game = {
         me.state.set(me.state.PLAY, new game.PlayScreen());
         me.state.set(me.state.GAME_END, new game.GameEnd());
         me.state.set(me.state.GAME_OVER, new game.GameOverScreen());
-        // me.state.set(me.state.PAUSE, new game.PauseScreen());
+        // me.state.set(me.state.GAME_PAUSE, new game.GamePause());
+        // me.state.set(me.state.GAME_PAUSE, new game.PauseScreen());
 
         // me.state.add(me.state.PLAY, new PlayState());
         // me.state.add(me.state.PAUSE, new PauseState());
@@ -97,6 +98,24 @@ var game = {
 };
 
 var switchCharacter = 0;
+
+// game.PauseModal = me.Renderable.extend({
+//     init: function() {
+//       this._super(me.Renderable, 'init', [0, 0, me.video.renderer.getWidth(), me.video.renderer.getHeight()]);
+//     //   this._super(me.Renderable, 'init', [0, 0, 500, 500]);
+//       this.isPersistent = true;
+//       this.modalOpacity = 0.8;
+//       this.z = Infinity;
+//     },
+  
+//     draw: function(renderer) {
+//       renderer.setColor('#000000');
+//       renderer.fillRect(0, 0, this.width, this.height);
+//       renderer.setOpacity(this.modalOpacity);
+//     }
+// });
+
+// var pauseModal = new game.PauseModal();
 
 game.BirdEntity = me.Entity.extend({
     init: function(x, y) {
@@ -131,10 +150,13 @@ game.BirdEntity = me.Entity.extend({
         // collision shape
         this.collided = false;
 
+        this.paused = false;
+
         this.gravityForce = 0.2;
     },
 
     update: function(dt) {
+        // if(this.paused) return;
         var that = this;
         this.pos.x = 100;
         if (!game.data.start) {
@@ -206,6 +228,28 @@ game.BirdEntity = me.Entity.extend({
             this.endAnimation();
             return false;
         }
+
+        if(this.paused) {
+            console.log("collision with robi pack");
+            console.log(this.paused);
+            // this.pauseGame();
+            // alert("Game paused!");
+
+            // var pauseModal = new PauseModal();
+            // me.game.world.addChild(new game.RobiPackGenerator(), 0);
+
+            // me.game.world.addChild(pauseModal);
+            // pauseModal.modalOpacity = 0.8;
+            // pauseModal.visible = true;
+            // game.pause();
+            this.showCollisionModal();
+
+            if(this.paused) {
+                this.paused = false;
+            }
+            console.log(this.paused);
+            // return;
+        }
         
         me.collision.check(this);
         return true;
@@ -219,9 +263,13 @@ game.BirdEntity = me.Entity.extend({
             this.collided = true;
             game.data.life--;
         }
+        else if (obj.type === 'robi_pack') {
+            // console.log("collision with robi pack")
+            me.device.vibrate(500);
+            this.paused = true;
+        }
         // remove the hit box
         if (obj.type === 'hit') {
-            // me.state.pause();
             me.game.world.removeChildNow(obj);
             game.data.steps++;
             game.data.score++;
@@ -265,7 +313,61 @@ game.BirdEntity = me.Entity.extend({
                 me.state.change(me.state.GAME_END);
             });
         this.endTween.start();
+    },
+    
+    pauseGame: function() {
+        // me.game.pause();
+        if(this.paused) {
+            this.paused = false;
+        }
+        me.game.viewport.fadeOut("#fff", 100);
+        var currentPos = this.pos.y;
+        this.endTween = new me.Tween(this.pos);
+        this.endTween.easing(me.Tween.Easing.Exponential.InOut);
+
+        this.flyTween.stop();
+        this.renderable.currentTransform.identity();
+        this.renderable.currentTransform.rotate(Number.prototype.degToRad(90));
+        var finalPos = me.game.viewport.height - this.renderable.width/2 - 96;
+        this.endTween
+            .to({y: currentPos}, 1000)
+            .to({y: finalPos}, 1000)
+            .onComplete(function() {
+                me.state.change(me.state.GAME_PAUSE);
+            });
+        this.endTween.start();
+    },
+
+    showCollisionModal: function() {
+        var modal = document.getElementById("myModal");
+        modal.style.display = "block";
+
+        this.paused = true;
+
+        var closeButton = document.getElementsByClassName("close")[0];
+        closeButton.onclick = function () {
+            modal.style.display = "none";
+            this.paused = false;
+        }
     }
+
+    // resumeGame: function() {
+    //     if (this.paused) {
+    //         this.paused = false;
+            
+    //         // Remove the pause modal from the game world
+    //         me.game.world.removeChild(pauseModal);
+            
+    //         // Hide the pause modal
+    //         pauseModal.visible = false;
+            
+    //         // Resume the game loop
+    //         me.state.resume();
+            
+    //         // Hide additional UI elements or perform any other actions
+            
+    //     }
+    // }
 });
 
 game.CharacterEntity = me.Entity.extend({
@@ -315,6 +417,7 @@ game.CharacterEntity = me.Entity.extend({
     },
 
     update: function(dt) {
+        // if(this.paused) return;
         var that = this;
         this.pos.x = 10;
         // this.pos.x = -30;
@@ -341,22 +444,22 @@ game.CharacterEntity = me.Entity.extend({
             switchCharacter = 0;
         }
 
-        if (me.input.isKeyPressed('fly')) {
-            me.audio.play('wing');
-            this.gravityForce = 0.2;
-            var currentPos = this.pos.y;
+        // if (me.input.isKeyPressed('fly')) {
+        //     me.audio.play('wing');
+        //     this.gravityForce = 0.2;
+        //     var currentPos = this.pos.y;
 
-            this.angleTween.stop();
-            this.flyTween.stop();
+        //     this.angleTween.stop();
+        //     this.flyTween.stop();
 
-            this.flyTween.to({y: currentPos - 72}, 50);
-            this.flyTween.start();
+        //     this.flyTween.to({y: currentPos - 72}, 50);
+        //     this.flyTween.start();
 
-            this.angleTween.to({currentAngle: that.maxAngleRotation}, 50).onComplete(function(angle) {
-                that.renderable.currentTransform.rotate(that.maxAngleRotation);
-            })
-            this.angleTween.start();
-        } else {
+        //     this.angleTween.to({currentAngle: that.maxAngleRotation}, 50).onComplete(function(angle) {
+        //         that.renderable.currentTransform.rotate(that.maxAngleRotation);
+        //     })
+        //     this.angleTween.start();
+        // } else {
             // this.gravityForce += 0.2;
             // this.pos.y += me.timer.tick * this.gravityForce;
             // this.currentAngle += Number.prototype.degToRad(3);
@@ -364,7 +467,7 @@ game.CharacterEntity = me.Entity.extend({
             //     this.renderable.currentTransform.identity();
             //     this.currentAngle = this.maxAngleRotationDown;
             // }
-        }
+        // }
 
         this.renderable.currentTransform.rotate(this.currentAngle);
         me.Rect.prototype.updateBounds.apply(this);
@@ -830,6 +933,12 @@ game.TitleScreen = me.ScreenObject.extend({
 
 game.PlayScreen = me.ScreenObject.extend({
     init: function() {
+        this.paused = false; // Flag to track game pause state
+        this.pauseModalShown = false; // Flag to track whether the pause modal is shown
+
+        // Bind the pause key
+        me.input.bindKey(me.input.KEY.P, "pause");
+
         me.audio.play("theme", true);
         // lower audio volume on firefox browser
         var vol = me.device.ua.indexOf("Firefox") !== -1 ? 0.3 : 0.5;
@@ -837,14 +946,48 @@ game.PlayScreen = me.ScreenObject.extend({
         this._super(me.ScreenObject, 'init');
     },
 
+    update: function() {
+        if (me.input.isKeyPressed("pause") && !this.pauseModalShown) {
+            this.togglePause();
+        }
+
+        if (this.paused) {
+            return true;
+        }
+
+        return true;
+    },
+
+    togglePause: function() {
+        if (this.paused) {
+            this.resumeGame();
+        } else {
+            this.pauseGame();
+        }
+    },
+
+    pauseGame: function() {
+        this.paused = true;
+        this.pauseModalShown = true;
+
+        me.timer.pause();
+    },
+
+    resumeGame: function() {
+        this.paused = false;
+        this.pauseModalShown = false;
+
+        me.timer.resume();
+    },
+
     onResetEvent: function() {
+        // if(this.paused) return;
         me.game.reset();
         me.audio.stop("theme");
         if (!game.data.muted){
             me.audio.play("theme", true);
         }
 
-        // me.input.bindKey(me.input.KEY.P, "pause");
         me.input.bindKey(me.input.KEY.SPACE, "fly", true);
 
         const sendGetRequest = async () => {
@@ -910,12 +1053,6 @@ game.PlayScreen = me.ScreenObject.extend({
             }).start();
     },
 
-    // update: function(dt) {
-    //     if (me.input.isKeyPressed("pause")) {
-    //       me.state.change(me.state.PAUSE);
-    //     }
-    // },
-
     onDestroyEvent: function() {
         me.audio.stopTrack('theme');
         // free the stored instance
@@ -926,31 +1063,9 @@ game.PlayScreen = me.ScreenObject.extend({
         this.ground2 = null;
         me.input.unbindKey(me.input.KEY.SPACE);
         me.input.unbindPointer(me.input.pointer.LEFT);
-    }
-});
 
-game.PauseScreen = me.ScreenObject.extend({
-    init: function() {
-        // me.audio.play("theme", true);
-        // lower audio volume on firefox browser
-        var vol = me.device.ua.indexOf("Firefox") !== -1 ? 0.3 : 0.5;
-        me.audio.setVolume(vol);
-        this._super(me.ScreenObject, 'init');
-    },
-
-    onResetEvent: function() {
-        // me.game.pause();
-        me.input.registerPointerEvent('pointerdown', me.game.viewport, this.onResume.bind(this));
-    },
-
-    onResume: function() {
-        me.input.releasePointerEvent('pointerdown', me.game.viewport);
-        me.game.resume();
-        me.state.change(me.state.PLAY);
-    },
-
-    onDestroyEvent: function() {
-        
+        // Unbind the pause key
+        me.input.unbindKey(me.input.KEY.P);
     }
 });
 
@@ -1236,3 +1351,204 @@ game.GameEnd = me.ScreenObject.extend({
         me.audio.stop("theme");
     }
 });
+
+game.GamePause = me.ScreenObject.extend({
+    init: function() {
+        this.savedData = null;
+        this.handler = null;
+    },
+
+    onResetEvent: function() {
+        //save section
+        this.savedData = {
+            score: game.data.score,
+            steps: game.data.steps,
+            life: game.data.life
+            // topSteps: game.data.topSteps
+        };
+        me.save.add(this.savedData);
+
+        me.input.bindKey(me.input.KEY.ENTER, "enter", true);
+        me.input.bindKey(me.input.KEY.SPACE, "enter", false)
+        me.input.bindPointer(me.input.pointer.LEFT, me.input.KEY.ENTER);
+
+        this.handler = me.event.subscribe(me.event.KEYDOWN,
+            function (action, keyCode, edge) {
+                if (action === "enter") {
+                    me.state.change(me.state.MENU);
+                }
+            });
+
+        me.game.world.addChild(new me.Sprite(
+            me.game.viewport.width/2,
+            me.game.viewport.height/2 - 100,
+            {image: 'gameover'}
+        ), 12);
+
+        var gameOverBG = new me.Sprite(
+            me.game.viewport.width/2,
+            me.game.viewport.height/2,
+            {image: 'gameoverbg'}
+        );
+        me.game.world.addChild(gameOverBG, 10);
+
+        me.game.world.addChild(new BackgroundLayer('bg', 1));
+
+        // ground
+        this.ground1 = me.pool.pull('ground', 0, me.game.viewport.height - 96);
+        this.ground2 = me.pool.pull('ground', me.game.viewport.width,
+            me.video.renderer.getHeight() - 96);
+        me.game.world.addChild(this.ground1, 11);
+        me.game.world.addChild(this.ground2, 11);
+
+        // add the dialog with the game information
+        if (game.data.newHiScore) {
+            var newRect = new me.Sprite(
+                gameOverBG.width/2,
+                gameOverBG.height/2,
+                {image: 'new'}
+            );
+            me.game.world.addChild(newRect, 12);
+        }
+
+        this.dialog = new (me.Renderable.extend({
+            // constructor
+            init: function() {
+                this._super(me.Renderable, 'init',
+                    [0, 0, me.game.viewport.width/2, me.game.viewport.height/2]
+                );
+                this.font = new me.Font('gamefont', 40, 'black', 'left');
+
+                const sendGetRequest = async () => {
+                    try {
+                        const response = await axios.get('http://127.0.0.1:8000/api/players/1');
+                        game.data.score = response.data.score;
+                        game.data.life = response.data.life;
+                    } catch (err) {
+                        console.error(err);
+                    }
+                };
+                
+                sendGetRequest();
+
+                this.steps = 'Game Pause: ' + game.data.steps.toString();
+                this.topSteps= 'Highest Score: ' + me.save.topSteps.toString();
+                this.life= 'You have no lives Left!';
+            },
+
+            draw: function (renderer) {
+                var stepsText = this.font.measureText(renderer, this.steps);
+                var topStepsText = this.font.measureText(renderer, this.topSteps);
+                var scoreText = this.font.measureText(renderer, this.score);
+                var lifeText = this.font.measureText(renderer, this.life);
+
+                //steps
+                this.font.draw(
+                    renderer,
+                    this.steps,
+                    me.game.viewport.width/2 - stepsText.width/2 - 140,
+                    me.game.viewport.height/2
+                );
+
+                //top score
+                this.font.draw(
+                    renderer,
+                    this.topSteps,
+                    me.game.viewport.width/2 - stepsText.width/2 - 140,
+                    me.game.viewport.height/2 + 50
+                );
+                
+                //Remaining lives
+                this.font.draw(
+                    renderer,
+                    this.life,
+                    me.game.viewport.width/2 - stepsText.width/2 - 140,
+                    me.game.viewport.height/2 + 100
+                );
+            }
+        }));
+        me.game.world.addChild(this.dialog, 12);
+    },
+
+    onDestroyEvent: function() {
+        // unregister the event
+        me.event.unsubscribe(this.handler);
+        me.input.unbindKey(me.input.KEY.ENTER);
+        me.input.unbindKey(me.input.KEY.SPACE);
+        me.input.unbindPointer(me.input.pointer.LEFT);
+        this.ground1 = null;
+        this.ground2 = null;
+        this.font = null;
+        me.audio.stop("theme");
+    }
+});
+
+// game.PauseScreen = me.ScreenObject.extend({
+    // init: function() {
+    //     this.handler = null;
+    // },
+    // onResetEvent: function() {
+    //     me.input.bindKey(me.input.KEY.ENTER, "enter", true);
+    //     me.input.bindKey(me.input.KEY.SPACE, "enter", false)
+    //     me.input.bindPointer(me.input.pointer.LEFT, me.input.KEY.ENTER);
+
+    //     this.handler = me.event.subscribe(me.event.KEYDOWN,
+    //         function (action, keyCode, edge) {
+    //             if (action === "enter") {
+    //                 me.state.change(me.state.MENU);
+    //             }
+    //         });
+
+    //     var gameOverBG = new me.Sprite(
+    //         me.game.viewport.width/2,
+    //         me.game.viewport.height/2,
+    //         {image: 'gameoverbg'}
+    //     );
+    //     me.game.world.addChild(gameOverBG, 10);
+
+    //     me.game.world.addChild(new BackgroundLayer('bg', 1));
+
+    //     // ground
+    //     this.ground1 = me.pool.pull('ground', 0, me.game.viewport.height - 96);
+    //     this.ground2 = me.pool.pull('ground', me.game.viewport.width,
+    //         me.video.renderer.getHeight() - 96);
+    //     me.game.world.addChild(this.ground1, 11);
+    //     me.game.world.addChild(this.ground2, 11);
+
+    //     this.dialog = new (me.Renderable.extend({
+    //         // constructor
+    //         init: function() {
+    //             this._super(me.Renderable, 'init',
+    //                 [0, 0, me.game.viewport.width/2, me.game.viewport.height/2]
+    //             );
+    //             this.font = new me.Font('gamefont', 40, 'black', 'left');
+
+    //             this.gamePause = 'Game Paused';
+    //         },
+
+    //         draw: function (renderer) {
+    //             var gamePauseText = this.font.measureText(renderer, this.gamePause);
+
+    //             this.font.draw(
+    //                 renderer,
+    //                 this.gamePause,
+    //                 me.game.viewport.width/2 - gamePauseText.width/2 - 60,
+    //                 me.game.viewport.height/2
+    //             );
+    //         }
+    //     }));
+    //     me.game.world.addChild(this.dialog, 12);
+    // },
+
+    // onDestroyEvent: function() {
+    //     // unregister the event
+    //     me.event.unsubscribe(this.handler);
+    //     me.input.unbindKey(me.input.KEY.ENTER);
+    //     me.input.unbindKey(me.input.KEY.SPACE);
+    //     me.input.unbindPointer(me.input.pointer.LEFT);
+    //     this.ground1 = null;
+    //     this.ground2 = null;
+    //     this.font = null;
+    //     me.audio.stop("theme");
+    // }
+// });
