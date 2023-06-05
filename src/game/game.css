@@ -1,5 +1,6 @@
 body {
     background-color: #0099cc;
+    /* background-color: #c7e0e8; */
     color: #fff;
 
     /* Allow mouse dragging. */
@@ -162,10 +163,10 @@ body {
     }
 
     #screen canvas {
-        /* height: 100% !important;
-        width: 67% !important; */
+        height: 100% !important;
+        width: 100% !important;
 
-        height: 100vw !important;
-        width: calc(100vw * 3 / 2) !important;
+        /* height: 100vw !important;
+        width: calc(100vw * 3 / 2) !important; */
     }
 }
