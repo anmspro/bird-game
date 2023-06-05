@@ -1,3 +1,6 @@
+// const { pauseOnBlur } = require("melonjs/dist/types/system/device");
+// const { STATE_PAUSE } = require("melonjs/dist/types/system/event");
+
 var game = {
     data: {
         score : 0,
@@ -174,6 +177,7 @@ game.BirdEntity = me.Entity.extend({
             this.angleTween.stop();
             this.flyTween.stop();
 
+            // this.flyTween.to({y: currentPos - 72}, 50);
             this.flyTween.to({y: currentPos - 72}, 50);
             this.flyTween.start();
 
@@ -230,8 +234,10 @@ game.BirdEntity = me.Entity.extend({
         }
 
         if(this.paused) {
+            // STATE_PAUSE
             console.log("collision with robi pack");
             console.log(this.paused);
+            // pauseOnBlur();
             // this.pauseGame();
             // alert("Game paused!");
 
@@ -341,12 +347,15 @@ game.BirdEntity = me.Entity.extend({
     showCollisionModal: function() {
         var modal = document.getElementById("myModal");
         modal.style.display = "block";
+        // modal.dataset.backdrop = "static";
+        // modal.dataset.keyboard = "false";
 
         this.paused = true;
 
         var closeButton = document.getElementsByClassName("close")[0];
         closeButton.onclick = function () {
             modal.style.display = "none";
+            // overlay.style.display = "block";
             this.paused = false;
         }
     }
