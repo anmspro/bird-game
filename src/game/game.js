@@ -234,9 +234,11 @@ game.BirdEntity = me.Entity.extend({
         }
 
         if(this.paused) {
+            
+            // console.log("collision with robi pack");
+            // console.log(this.paused);
+            
             // STATE_PAUSE
-            console.log("collision with robi pack");
-            console.log(this.paused);
             // pauseOnBlur();
             // this.pauseGame();
             // alert("Game paused!");
@@ -253,7 +255,7 @@ game.BirdEntity = me.Entity.extend({
             if(this.paused) {
                 this.paused = false;
             }
-            console.log(this.paused);
+            // console.log(this.paused);
             // return;
         }
         

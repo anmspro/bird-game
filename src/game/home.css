@@ -1,0 +1,30 @@
+body {
+    background: #ebeef1;
+}
+
+button {
+    all: unset;
+    cursor: pointer;
+}
+
+.main-card {
+    border-radius: 0.625rem;
+    box-shadow: none;
+    border: 0.125rem solid transparent;
+    height: 15rem !important;
+    transition: box-shadow 0.3s;
+}
+
+.main-card:hover {
+    box-shadow: 0 0 40px rgba(33, 33, 33, 0.2);
+}
+
+.cricket {
+    background-image: url("./../../data/img/cricket.png");
+    background-size: 100% 100%;
+}
+
+.football {
+    background-image: url("./../../data/img/football_home.png");
+    background-size: 100% 100%;
+}
