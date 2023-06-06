@@ -75,6 +75,7 @@ game.BirdEntity = me.Entity.extend({
             this.angleTween.stop();
             this.flyTween.stop();
 
+            // this.flyTween.to({y: currentPos - 72}, 50);
             this.flyTween.to({y: currentPos - 72}, 50);
             this.flyTween.start();
 
@@ -131,8 +132,16 @@ game.BirdEntity = me.Entity.extend({
         }
 
         if(this.paused) {
-            console.log("collision with robi pack");
-            console.log(this.paused);
+            // saved_game = me.game;
+            // console.log(me.game.world);
+            
+            // console.log("collision with robi pack");
+            // console.log(this.paused);
+            
+            // STATE_PAUSE
+            // me.state.change(me.state.pause);
+            // me.state.set(me.state.pause);
+
             // this.pauseGame();
             // alert("Game paused!");
 
@@ -148,7 +157,7 @@ game.BirdEntity = me.Entity.extend({
             if(this.paused) {
                 this.paused = false;
             }
-            console.log(this.paused);
+            // console.log(this.paused);
             // return;
         }
         
@@ -242,12 +251,15 @@ game.BirdEntity = me.Entity.extend({
     showCollisionModal: function() {
         var modal = document.getElementById("myModal");
         modal.style.display = "block";
+        // modal.dataset.backdrop = "static";
+        // modal.dataset.keyboard = "false";
 
         this.paused = true;
 
         var closeButton = document.getElementsByClassName("close")[0];
         closeButton.onclick = function () {
             modal.style.display = "none";
+            // overlay.style.display = "block";
             this.paused = false;
         }
     }

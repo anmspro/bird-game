@@ -1,6 +1,3 @@
-// const { pauseOnBlur } = require("melonjs/dist/types/system/device");
-// const { STATE_PAUSE } = require("melonjs/dist/types/system/event");
-
 var game = {
     data: {
         score : 0,
