@@ -156,7 +156,6 @@ game.BirdEntity = me.Entity.extend({
     },
 
     update: function(dt) {
-        // if(this.paused) return;
         var that = this;
         this.pos.x = 100;
         if (!game.data.start) {
@@ -231,15 +230,19 @@ game.BirdEntity = me.Entity.extend({
         }
 
         if(this.paused) {
-            // saved_game = me.game;
-            // console.log(me.game.world);
+            window.cancelAnimationFrame(this.update);
+
+            saved_game = me;
+            console.log("me.game.world", me.game.world);
+            console.log("saved_game", saved_game);
+            me.state.change(me.state.STATE_PAUSE);
+            // me.state.set(me.state.STATE_PAUSE);
+
+            // me.state.change(me.state.pause, new game.TitleScreen());
+            // me.state.onPause();
             
-            // console.log("collision with robi pack");
-            // console.log(this.paused);
-            
-            // STATE_PAUSE
-            // me.state.change(me.state.pause);
-            // me.state.set(me.state.pause);
+            console.log("collision with robi pack");
+            console.log(this.paused);
 
             // this.pauseGame();
             // alert("Game paused!");
@@ -250,14 +253,13 @@ game.BirdEntity = me.Entity.extend({
             // me.game.world.addChild(pauseModal);
             // pauseModal.modalOpacity = 0.8;
             // pauseModal.visible = true;
-            // game.pause();
+            
             this.showCollisionModal();
 
             if(this.paused) {
                 this.paused = false;
             }
-            // console.log(this.paused);
-            // return;
+            console.log(this.paused);
         }
         
         me.collision.check(this);
@@ -361,7 +363,9 @@ game.BirdEntity = me.Entity.extend({
             // overlay.style.display = "block";
             this.paused = false;
         }
-    }
+
+        // me.state.change(me.state.STATE_RESUME);
+    },
 
     // resumeGame: function() {
     //     if (this.paused) {
@@ -380,6 +384,32 @@ game.BirdEntity = me.Entity.extend({
             
     //     }
     // }
+
+    PauseState: function() {
+        this.name = "Pause";
+      
+        this.onEnter = function() {
+          // Pause the game timer.
+          pauseTimer();
+      
+          // Stop the audio.
+          stopAudio();
+      
+          // Disable input.
+          disableInput();
+        };
+      
+        this.onExit = function() {
+          // Resume the game timer.
+          resumeTimer();
+      
+          // Start the audio.
+          startAudio();
+      
+          // Enable input.
+          enableInput();
+        };
+      }
 });
 
 game.CharacterEntity = me.Entity.extend({
