@@ -230,19 +230,23 @@ game.BirdEntity = me.Entity.extend({
         }
 
         if(this.paused) {
-            window.cancelAnimationFrame(this.update);
+            // window.cancelAnimationFrame(this.update);
 
             saved_game = me;
             console.log("me.game.world", me.game.world);
             console.log("saved_game", saved_game);
-            me.state.change(me.state.STATE_PAUSE);
+            
+            console.log("isPaused", me.state.isPaused());
+            me.state.change(me.state.pause(true));
+            console.log("isPaused", me.state.isPaused());
+            
             // me.state.set(me.state.STATE_PAUSE);
+            // me.event.publish(me.event.STATE_PAUSE);
 
             // me.state.change(me.state.pause, new game.TitleScreen());
             // me.state.onPause();
             
             console.log("collision with robi pack");
-            console.log(this.paused);
 
             // this.pauseGame();
             // alert("Game paused!");
@@ -255,11 +259,9 @@ game.BirdEntity = me.Entity.extend({
             // pauseModal.visible = true;
             
             this.showCollisionModal();
+            // me.state.change(me.state.STATE_RESUME);
 
-            if(this.paused) {
-                this.paused = false;
-            }
-            console.log(this.paused);
+            this.paused = false;
         }
         
         me.collision.check(this);
@@ -361,7 +363,13 @@ game.BirdEntity = me.Entity.extend({
         closeButton.onclick = function () {
             modal.style.display = "none";
             // overlay.style.display = "block";
+            console.log("Close button - showCollisionModal");
             this.paused = false;
+            console.log("isPaused - showCollisionModal Close", me.state.isPaused());
+            me.state.change(me.state.resume(true));
+            console.log("isPaused - showCollisionModal Close", me.state.isPaused());
+            // me.event.publish(me.event.STATE_RESUME);
+            me.state.set(me.state.PLAY, new game.PlayScreen());
         }
 
         // me.state.change(me.state.STATE_RESUME);
@@ -646,7 +654,6 @@ game.PipeEntity = me.Entity.extend({
         this._super(me.Entity, 'update', [dt]);
         return true;
     },
-
 });
 
 game.PipeGenerator = me.Renderable.extend({

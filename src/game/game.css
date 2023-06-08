@@ -125,7 +125,7 @@ body {
 
 .modal-content {
     background-color: #fefefe;
-    margin: 15% auto;
+    margin: 40% auto;
     padding: 20px;
     border: 1px solid #888;
     width: 80%;
@@ -151,21 +151,15 @@ body {
         transform-origin: left top;
         width: 100vh;
         height: 100vw;
-        /* width: 100vw;
-        height: 100vh; */
         overflow-x: hidden;
         position: absolute;
         top: 100%;
-        /* top: 0; */
         left: 0;
         bottom: 0;
         right: 0;
     }
 
     #screen canvas {
-        /* height: 100% !important;
-        width: 100% !important; */
-
         height: 100vw !important;
         width: calc(100vw * 3 / 2) !important;
     }
