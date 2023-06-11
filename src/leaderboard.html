@@ -2,16 +2,64 @@
 <html lang="en">
 
 <head>
-    <title>Bird Game</title>
+    <title>Leaderboard</title>
+    <link rel="stylesheet" type="text/css" href="leaderboard.css">
 </head>
 
 <body>
-    <div>
-        <h2>
-            - TODO: Leaderboard page to be displayed
-        </h2>
-    </div>
+    <h1>Leaderboard</h1>
+    <table>
+        <tr>
+            <th>Player</th>
+            <th>Top Score</th>
+            <th>Total Score</th>
+        </tr>
+        <tr>
+            <td>Player 1</td>
+            <td>1000</td>
+            <td>5000</td>
+        </tr>
+        <tr>
+            <td>Player 2</td>
+            <td>950</td>
+            <td>4800</td>
+        </tr>
+        <tr>
+            <td>Player 3</td>
+            <td>900</td>
+            <td>4500</td>
+        </tr>
+        <!-- Add more rows as needed -->
+    </table>
 
+    <script>
+        const leaderboardTable = document.getElementById('leaderboard-table');
+
+        // Fetch player data from the API
+        fetch('https://api.example.com/leaderboard')
+            .then(response => response.json())
+            .then(data => {
+                // Iterate over the player data and populate the leaderboard table
+                data.forEach(player => {
+                    const row = document.createElement('tr');
+                    const playerName = document.createElement('td');
+                    playerName.textContent = player.name;
+                    const topScore = document.createElement('td');
+                    topScore.textContent = player.topScore;
+                    const totalScore = document.createElement('td');
+                    totalScore.textContent = player.totalScore;
+
+                    row.appendChild(playerName);
+                    row.appendChild(topScore);
+                    row.appendChild(totalScore);
+                    leaderboardTable.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+    </script>
 </body>
 
 </html>
