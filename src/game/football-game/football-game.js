@@ -13,7 +13,7 @@ var game = {
     resources: [
         // images
         {name: "bg0", type:"image", src: "./../../../data/img/bg.png"},
-        {name: "bg", type:"image", src: "./../../../data/img/robi_tamim_bg.png"},
+        {name: "bg", type:"image", src: "./../../../data/img/football_background_original.png"},
         // {name: "clumsy", type:"image", src: "./../../../data/img/clumsy.png"},
         {name: "clumsy", type:"image", src: "./../../../data/img/football1_transparent.png"},
         {name: "character", type:"image", src: "./../../../data/img/character_transparent.png"},
