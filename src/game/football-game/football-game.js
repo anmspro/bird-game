@@ -1,3 +1,6 @@
+var imageSource = localStorage.getItem("imageSource");
+imageSource = "./../../../data/img/" + imageSource + ".png";
+
 var game = {
     data: {
         score : 0,
@@ -18,7 +21,8 @@ var game = {
         {name: "clumsy", type:"image", src: "./../../../data/img/football1_transparent.png"},
         {name: "character", type:"image", src: "./../../../data/img/character_transparent.png"},
         {name: "character_big", type:"image", src: "./../../../data/img/character_transparent_big.png"},
-        {name: "character_front", type:"image", src: "./../../../data/img/front_small.png"},
+        // {name: "character_front", type:"image", src: "./../../../data/img/front_small.png"},
+        {name: "character_front", type:"image", src: imageSource},
         {name: "character_side1", type:"image", src: "./../../../data/img/side1_small.png"},
         {name: "character_side2", type:"image", src: "./../../../data/img/side2_small.png"},
         {name: "pipe", type:"image", src: "./../../../data/img/pipe.png"},
@@ -375,49 +379,6 @@ game.BirdEntity = me.Entity.extend({
         // me.state.change(me.state.STATE_RESUME);
     },
 
-    // resumeGame: function() {
-    //     if (this.paused) {
-    //         this.paused = false;
-            
-    //         // Remove the pause modal from the game world
-    //         me.game.world.removeChild(pauseModal);
-            
-    //         // Hide the pause modal
-    //         pauseModal.visible = false;
-            
-    //         // Resume the game loop
-    //         me.state.resume();
-            
-    //         // Hide additional UI elements or perform any other actions
-            
-    //     }
-    // }
-
-    PauseState: function() {
-        this.name = "Pause";
-      
-        this.onEnter = function() {
-          // Pause the game timer.
-          pauseTimer();
-      
-          // Stop the audio.
-          stopAudio();
-      
-          // Disable input.
-          disableInput();
-        };
-      
-        this.onExit = function() {
-          // Resume the game timer.
-          resumeTimer();
-      
-          // Start the audio.
-          startAudio();
-      
-          // Enable input.
-          enableInput();
-        };
-      }
 });
 
 game.CharacterEntity = me.Entity.extend({

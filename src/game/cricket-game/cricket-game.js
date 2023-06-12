@@ -1,3 +1,6 @@
+var imageSource = localStorage.getItem("imageSource");
+imageSource = "./../../../data/img/" + imageSource + ".png";
+
 var game = {
     data: {
         score : 0,
@@ -14,10 +17,12 @@ var game = {
         // images
         {name: "bg0", type:"image", src: "./../../../data/img/bg.png"},
         {name: "bg", type:"image", src: "./../../../data/img/cricket_background.jpg"},
+        // {name: "bg", type:"image", src: "./../../../data/img/cricket_home.png"},
         {name: "clumsy", type:"image", src: "./../../../data/img/cricket2_transparent.png"},
         {name: "character", type:"image", src: "./../../../data/img/character_transparent.png"},
         {name: "character_big", type:"image", src: "./../../../data/img/character_transparent_big.png"},
-        {name: "character_front", type:"image", src: "./../../../data/img/front_small.png"},
+        // {name: "character_front", type:"image", src: "./../../../data/img/front_small.png"},
+        {name: "character_front", type:"image", src: imageSource},
         {name: "character_side1", type:"image", src: "./../../../data/img/side1_small.png"},
         {name: "character_side2", type:"image", src: "./../../../data/img/side2_small.png"},
         {name: "pipe", type:"image", src: "./../../../data/img/pipe.png"},
@@ -231,6 +236,8 @@ game.BirdEntity = me.Entity.extend({
         if(this.paused) {
             // window.cancelAnimationFrame(this.update);
 
+            me.state.change(me.state.pause(true));
+            
             // me.state.set(me.state.STATE_PAUSE);
             // me.event.publish(me.event.STATE_PAUSE);
 
@@ -266,7 +273,6 @@ game.BirdEntity = me.Entity.extend({
             game.data.life--;
         }
         else if (obj.type === 'robi_pack') {
-            // console.log("collision with robi pack")
             me.device.vibrate(500);
             this.paused = true;
         }
@@ -352,11 +358,8 @@ game.BirdEntity = me.Entity.extend({
         closeButton.onclick = function () {
             modal.style.display = "none";
             // overlay.style.display = "block";
-            console.log("Close button - showCollisionModal");
             this.paused = false;
-            console.log("isPaused - showCollisionModal Close", me.state.isPaused());
             me.state.change(me.state.resume(true));
-            console.log("isPaused - showCollisionModal Close", me.state.isPaused());
             // me.event.publish(me.event.STATE_RESUME);
             me.state.set(me.state.PLAY, new game.PlayScreen());
         }
