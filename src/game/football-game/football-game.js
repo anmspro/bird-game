@@ -388,10 +388,11 @@ game.CharacterEntity = me.Entity.extend({
         // settings.image = 'character_big';
         settings.image = 'character_front';
         // settings.width = 85;
-        // settings.width = 191;
-        settings.width = 87;
         // settings.height = 120;
+        // settings.width = 191;
         // settings.height = 270;
+        console.log(settings);
+        settings.width = 87;
         settings.height = 270;  
         
         this._super(me.Entity, 'init', [x, y, settings]);

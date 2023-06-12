@@ -10,6 +10,11 @@ function startGame() {
     // window.location.href = "rewards.html";
   }
   
+  function openSettings() {
+    // window.location.href = "rewards.html";
+  }
+  
+  
   function logOut() {
     // window.location.href = "logout.html";
   }
