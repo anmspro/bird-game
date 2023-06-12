@@ -12,31 +12,30 @@ var game = {
 
     resources: [
         // images
-        {name: "bg0", type:"image", src: "./../../data/img/bg.png"},
-        {name: "bg", type:"image", src: "./../../data/img/robi_tamim_bg.png"},
-        // {name: "clumsy", type:"image", src: "./../../data/img/clumsy.png"},
-        {name: "clumsy", type:"image", src: "./../../data/img/football1_transparent.png"},
-        {name: "character", type:"image", src: "./../../data/img/character_transparent.png"},
-        {name: "character_big", type:"image", src: "./../../data/img/character_transparent_big.png"},
-        {name: "character_front", type:"image", src: "./../../data/img/front_small.png"},
-        {name: "character_side1", type:"image", src: "./../../data/img/side1_small.png"},
-        {name: "character_side2", type:"image", src: "./../../data/img/side2_small.png"},
-        {name: "pipe", type:"image", src: "./../../data/img/pipe.png"},
-        {name: "robi_pack", type:"image", src: "./../../data/img/robi_pack.png"},
-        {name: "logo", type:"image", src: "./../../data/img/logo.png"},
-        {name: "ground", type:"image", src: "./../../data/img/ground.png"},
-        {name: "gameover", type:"image", src: "./../../data/img/gameover.png"},
-        {name: "gameoverbg", type:"image", src: "./../../data/img/gameoverbg.png"},
-        {name: "hit", type:"image", src: "./../../data/img/hit.png"},
-        {name: "getready", type:"image", src: "./../../data/img/getready.png"},
-        {name: "new", type:"image", src: "./../../data/img/new.png"},
-        {name: "share", type:"image", src: "./../../data/img/share.png"},
-        {name: "tweet", type:"image", src: "./../../data/img/tweet.png"},
+        {name: "bg0", type:"image", src: "./../../../data/img/bg.png"},
+        {name: "bg", type:"image", src: "./../../../data/img/cricket_background.jpg"},
+        {name: "clumsy", type:"image", src: "./../../../data/img/cricket2_transparent.png"},
+        {name: "character", type:"image", src: "./../../../data/img/character_transparent.png"},
+        {name: "character_big", type:"image", src: "./../../../data/img/character_transparent_big.png"},
+        {name: "character_front", type:"image", src: "./../../../data/img/front_small.png"},
+        {name: "character_side1", type:"image", src: "./../../../data/img/side1_small.png"},
+        {name: "character_side2", type:"image", src: "./../../../data/img/side2_small.png"},
+        {name: "pipe", type:"image", src: "./../../../data/img/pipe.png"},
+        {name: "robi_pack", type:"image", src: "./../../../data/img/robi_pack.png"},
+        {name: "logo", type:"image", src: "./../../../data/img/logo.png"},
+        {name: "ground", type:"image", src: "./../../../data/img/ground.png"},
+        {name: "gameover", type:"image", src: "./../../../data/img/gameover.png"},
+        {name: "gameoverbg", type:"image", src: "./../../../data/img/gameoverbg.png"},
+        {name: "hit", type:"image", src: "./../../../data/img/hit.png"},
+        {name: "getready", type:"image", src: "./../../../data/img/getready.png"},
+        {name: "new", type:"image", src: "./../../../data/img/new.png"},
+        {name: "share", type:"image", src: "./../../../data/img/share.png"},
+        {name: "tweet", type:"image", src: "./../../../data/img/tweet.png"},
         // sounds
-        {name: "theme", type: "audio", src: "./../../data/bgm/"},
-        {name: "hit", type: "audio", src: "./../../data/sfx/"},
-        {name: "lose", type: "audio", src: "./../../data/sfx/"},
-        {name: "wing", type: "audio", src: "./../../data/sfx/"},
+        {name: "theme", type: "audio", src: "./../../../data/bgm/"},
+        {name: "hit", type: "audio", src: "./../../../data/sfx/"},
+        {name: "lose", type: "audio", src: "./../../../data/sfx/"},
+        {name: "wing", type: "audio", src: "./../../../data/sfx/"},
 
     ],
 
@@ -232,21 +231,11 @@ game.BirdEntity = me.Entity.extend({
         if(this.paused) {
             // window.cancelAnimationFrame(this.update);
 
-            saved_game = me;
-            console.log("me.game.world", me.game.world);
-            console.log("saved_game", saved_game);
-            
-            console.log("isPaused", me.state.isPaused());
-            me.state.change(me.state.pause(true));
-            console.log("isPaused", me.state.isPaused());
-            
             // me.state.set(me.state.STATE_PAUSE);
             // me.event.publish(me.event.STATE_PAUSE);
 
             // me.state.change(me.state.pause, new game.TitleScreen());
             // me.state.onPause();
-            
-            console.log("collision with robi pack");
 
             // this.pauseGame();
             // alert("Game paused!");
