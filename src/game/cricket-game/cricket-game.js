@@ -16,8 +16,8 @@ var game = {
     resources: [
         // images
         {name: "bg0", type:"image", src: "./../../../data/img/bg.png"},
-        {name: "bg", type:"image", src: "./../../../data/img/cricket_background.jpg"},
-        // {name: "bg", type:"image", src: "./../../../data/img/cricket_home.png"},
+        // {name: "bg", type:"image", src: "./../../../data/img/cricket_background.jpg"},
+        {name: "bg", type:"image", src: "./../../../data/img/cricket_stadium.jpg"},
         {name: "clumsy", type:"image", src: "./../../../data/img/cricket2_transparent.png"},
         {name: "character", type:"image", src: "./../../../data/img/character_transparent.png"},
         {name: "character_big", type:"image", src: "./../../../data/img/character_transparent_big.png"},
